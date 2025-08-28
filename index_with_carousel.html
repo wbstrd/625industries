@@ -1403,7 +1403,10 @@
                 carouselItem.style.flexShrink = "0";
                 
                 const img = document.createElement("img");
-                img.src = `${BASE_PATH}medium_res/img${String(imageNum).padStart(3, '0')}-med.jpg`;
+                // Use lower resolution on mobile for better performance
+                const carouselRes = isMobile ? 'small_res' : 'medium_res';
+                const carouselSuffix = isMobile ? '-small' : '-med';
+                img.src = `${BASE_PATH}${carouselRes}/img${String(imageNum).padStart(3, '0')}${carouselSuffix}.jpg`;
                 img.alt = `${project.title} - Image ${index + 1}`;
                 img.onerror = () => {
                     carouselItem.style.display = 'none';
@@ -1513,6 +1516,7 @@
             const toggleButton = document.getElementById("toggle-button");
             const projectList = document.getElementById("project-list");
             const clock625 = document.getElementById("clock625");
+            const zoomSlider = document.querySelector(".zoom-slider-container");
 
             // Haptic feedback for toggle
             hapticFeedback('medium');
@@ -1523,10 +1527,18 @@
                 toggleButton.classList.add("active");
                 projectList.classList.add("active");
                 clock625.classList.add("hidden");
+                // Hide zoom slider when project list is active
+                if (zoomSlider && isMobile) {
+                    zoomSlider.style.display = "none";
+                }
             } else {
                 toggleButton.classList.remove("active");
                 projectList.classList.remove("active");
                 clock625.classList.remove("hidden");
+                // Show zoom slider when back to clock view
+                if (zoomSlider && isMobile) {
+                    zoomSlider.style.display = "flex";
+                }
             }
         }
 
@@ -1567,10 +1579,19 @@
             holder.style.transform = `scale(${scale})`;
 
             let newRes = "low";
-            if (scale >= 1.3) newRes = "small";
-            if (scale >= 2.3) newRes = "medium";
-            if (scale >= 5.5) newRes = "high1200";
-            if (scale >= 11) newRes = "high";
+            
+            if (isMobile) {
+                // Use lower resolutions on mobile for better performance
+                if (scale >= 1.5) newRes = "small";
+                if (scale >= 3.0) newRes = "medium";
+                // Cap at medium resolution on mobile to prevent lag
+            } else {
+                // Desktop resolution progression
+                if (scale >= 1.3) newRes = "small";
+                if (scale >= 2.3) newRes = "medium";
+                if (scale >= 5.5) newRes = "high1200";
+                if (scale >= 11) newRes = "high";
+            }
 
             if (newRes !== currentRes) {
                 currentRes = newRes;
