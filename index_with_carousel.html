@@ -1595,7 +1595,7 @@
             updateZoom();
         }, { passive: false });
 
-        let scale = isMobile ? 0.3 : 1; // Start smaller on mobile
+        let scale = isMobile ? 0.6 : 1; // Start at reasonable mobile size (was 0.3, too small)
         const minScale = isMobile ? 0.1 : 0.5; // Allow much smaller zoom on mobile
         const maxScale = isMobile ? 8 : 15; // Reduced max zoom on mobile
         let currentRes = isMobile ? "micro" : "low";
@@ -1898,7 +1898,7 @@
                 // Double tap detected - haptic success feedback
                 hapticFeedback('success');
                 
-                scale = isMobile ? 0.3 : 1; // Reset to appropriate scale for device
+                scale = isMobile ? 0.6 : 1; // Reset to appropriate scale for device
                 offsetX = 0;
                 offsetY = 0;
                 holder.style.left = "50%";
@@ -2109,6 +2109,11 @@
         // Initialize
         populateProjectList();
         updateZoom();
+        
+        // Initialize zoom slider position on mobile
+        if (isMobile) {
+            updateZoomSlider();
+        }
     </script>
 </body>
 </html>
