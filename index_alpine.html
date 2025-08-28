@@ -395,12 +395,19 @@
       transform-origin: center center;
       width: max-content;
       margin: 40px auto;
-      transition: transform 0.05s linear, opacity 0.3s ease;
+      transition: transform 0.5s ease-out, opacity 0.3s ease;
       position: absolute;
       top: 50%;
       left: 50%;
       translate: -50% -50%;
       transform-style: preserve-3d;
+      perspective: 1000px;
+    }
+
+    /* 3D Mode Styles */
+    #clock625.mode-3d {
+      transform: scale(0.6) rotateX(20deg) rotateY(15deg);
+      perspective: 2000px;
     }
 
     #clock625.hidden {
@@ -411,12 +418,11 @@
     .tile {
       width: 16px;
       height: 16px;
-      transition: transform 0.2s ease-out, filter 0.3s ease;
+      transition: all 0.5s ease-out;
       z-index: 0;
       cursor: pointer;
       position: relative;
       transform-style: preserve-3d;
-      perspective: 1000px;
       margin: 1px;
       transform: translateZ(0px);
     }
@@ -432,6 +438,16 @@
       transition: transform 0.2s ease-out;
       transform: translateZ(4px);
       box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Simple 3D effect - just add depth and better shadows */
+    .mode-3d .tile img {
+      transform: translateZ(12px);
+      box-shadow: 
+        0 6px 20px rgba(0, 0, 0, 0.3),
+        0 2px 6px rgba(0, 0, 0, 0.2);
+      border-radius: 3px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
     }
     
     .hovered img {
@@ -1118,78 +1134,88 @@ function initThreeJS() {
   directionalLight.castShadow = true;
   scene.add(directionalLight);
 
-  // Create 3D project tiles
-  create3DProjectTiles();
-
   // Add event listeners
   addThreeJSEventListeners();
 
   // Start animation loop
   animate();
+  
+  // Don't create 3D tiles immediately - wait for user to switch to 3D view
 }
 
-// Create 3D tiles for projects
+// Create 3D version of the actual 625 clock structure
 function create3DProjectTiles() {
   const textureLoader = new THREE.TextureLoader();
-  let tileIndex = 0;
-
-  Object.keys(projects).forEach(year => {
-    projects[year].forEach(project => {
-      // Create geometry
-      const geometry = new THREE.BoxGeometry(3, 3, 0.2);
+  
+  // Wait for the 2D clock to be built first
+  setTimeout(() => {
+    const clockElement = document.getElementById('clock625');
+    const tiles = clockElement.querySelectorAll('.tile');
+    
+    tiles.forEach((tile, index) => {
+      const img = tile.querySelector('img');
+      if (!img) return;
       
-      // Create material with project image
+      // Get position from the 2D grid
+      const rect = tile.getBoundingClientRect();
+      const clockRect = clockElement.getBoundingClientRect();
+      
+      // Convert 2D position to 3D coordinates
+      const x = ((rect.left - clockRect.left) - clockRect.width/2) * 0.1;
+      const y = ((clockRect.height/2) - (rect.top - clockRect.top)) * 0.1;
+      const z = 0;
+      
+      // Create 3D cube geometry
+      const geometry = new THREE.BoxGeometry(1.6, 1.6, 1.6);
+      
+      // Load the actual image as texture
       const material = new THREE.MeshLambertMaterial({ 
-        color: 0x888888,
+        color: 0xffffff,
         transparent: true,
-        opacity: 0.8
+        opacity: 0.9
       });
+      
+      // Load texture
+      textureLoader.load(
+        img.src,
+        (texture) => {
+          material.map = texture;
+          material.needsUpdate = true;
+        },
+        undefined,
+        (error) => {
+          // Fallback to colored cube if image fails
+          material.color.setHex(0x444444);
+        }
+      );
 
       // Create mesh
-      const tile = new THREE.Mesh(geometry, material);
+      const cube = new THREE.Mesh(geometry, material);
+      cube.position.set(x, y, z);
       
-      // Position tiles in "625" pattern
-      const positions = get625Positions();
-      if (positions[tileIndex]) {
-        tile.position.set(positions[tileIndex].x, positions[tileIndex].y, positions[tileIndex].z);
-      }
-      
-      // Add project data to tile
-      tile.userData = { project, index: tileIndex };
+      // Add project data
+      const imageNumber = parseInt(img.dataset.src?.match(/img(\d+)/)?.[1]);
+      const project = imageToProjectMap[imageNumber];
+      cube.userData = { project, index, imageNumber };
       
       // Add to scene and array
-      scene.add(tile);
-      projectTiles.push(tile);
-      
-      tileIndex++;
+      scene.add(cube);
+      projectTiles.push(cube);
     });
-  });
+  }, 1000); // Wait for clock to be fully built
 }
 
-// Get positions for "625" pattern
-function get625Positions() {
-  const positions = [];
-  const spacing = 4;
-  
-  // Define "625" pattern positions
-  const pattern = [
-    // 6 shape
-    {x: -10, y: 5, z: 0}, {x: -8, y: 5, z: 0}, {x: -6, y: 5, z: 0},
-    {x: -10, y: 3, z: 0}, {x: -6, y: 3, z: 0},
-    {x: -10, y: 1, z: 0}, {x: -8, y: 1, z: 0}, {x: -6, y: 1, z: 0},
-    
-    // 2 shape
-    {x: 0, y: 5, z: 0}, {x: 2, y: 5, z: 0}, {x: 4, y: 5, z: 0},
-    {x: 4, y: 3, z: 0},
-    {x: 0, y: 1, z: 0}, {x: 2, y: 1, z: 0}, {x: 4, y: 1, z: 0},
-    
-    // 5 shape
-    {x: 10, y: 5, z: 0}, {x: 12, y: 5, z: 0}, {x: 14, y: 5, z: 0},
-    {x: 10, y: 3, z: 0},
-    {x: 10, y: 1, z: 0}, {x: 12, y: 1, z: 0}, {x: 14, y: 1, z: 0}
-  ];
-  
-  return pattern;
+// Clear existing 3D tiles when switching views
+function clear3DTiles() {
+  projectTiles.forEach(tile => {
+    scene.remove(tile);
+    if (tile.geometry) tile.geometry.dispose();
+    if (tile.material) {
+      if (tile.material.map) tile.material.map.dispose();
+      tile.material.dispose();
+    }
+  });
+  projectTiles = [];
 }
 
 // Add Three.js event listeners
@@ -1297,18 +1323,100 @@ function toggleWireframe() {
   }
 }
 
-// Toggle between clock and 3D view
+// Toggle between flat and 3D view
+let rotationX = 0;
+let rotationY = 0;
+let isRotating = false;
+
 function toggleView() {
   currentView = currentView === 'clock' ? '3d' : 'clock';
+  const clock = document.getElementById('clock625');
   
   if (currentView === '3d') {
-    document.getElementById('clock625-container').style.display = 'none';
-    document.getElementById('three-container').style.display = 'block';
+    // Simple 3D mode - just add class for deeper shadows and rotation
+    clock.classList.add('mode-3d');
+    addRotationControls();
   } else {
-    document.getElementById('clock625-container').style.display = 'block';
-    document.getElementById('three-container').style.display = 'none';
+    // Back to flat 2D
+    clock.classList.remove('mode-3d');
+    removeRotationControls();
+    
+    // Reset rotation
+    rotationX = 0;
+    rotationY = 0;
+    updateClockRotation();
   }
 }
+
+function addRotationControls() {
+  const container = document.getElementById('clock625-container');
+  
+  // Mouse drag to rotate
+  let isDragging = false;
+  let lastX = 0;
+  let lastY = 0;
+  
+  function onMouseDown(e) {
+    if (currentView !== '3d') return;
+    isDragging = true;
+    lastX = e.clientX;
+    lastY = e.clientY;
+    container.style.cursor = 'grabbing';
+  }
+  
+  function onMouseMove(e) {
+    if (!isDragging || currentView !== '3d') return;
+    
+    const deltaX = e.clientX - lastX;
+    const deltaY = e.clientY - lastY;
+    
+    rotationY += deltaX * 0.5;
+    rotationX -= deltaY * 0.5;
+    
+    // Limit rotation
+    rotationX = Math.max(-60, Math.min(60, rotationX));
+    
+    updateClockRotation();
+    
+    lastX = e.clientX;
+    lastY = e.clientY;
+  }
+  
+  function onMouseUp() {
+    isDragging = false;
+    container.style.cursor = 'grab';
+  }
+  
+  container.addEventListener('mousedown', onMouseDown);
+  window.addEventListener('mousemove', onMouseMove);
+  window.addEventListener('mouseup', onMouseUp);
+  
+  // Store references for cleanup
+  container._rotationHandlers = { onMouseDown, onMouseMove, onMouseUp };
+}
+
+function removeRotationControls() {
+  const container = document.getElementById('clock625-container');
+  if (container._rotationHandlers) {
+    const { onMouseDown, onMouseMove, onMouseUp } = container._rotationHandlers;
+    container.removeEventListener('mousedown', onMouseDown);
+    window.removeEventListener('mousemove', onMouseMove);
+    window.removeEventListener('mouseup', onMouseUp);
+    delete container._rotationHandlers;
+  }
+  container.style.cursor = 'grab';
+}
+
+function updateClockRotation() {
+  const clock = document.getElementById('clock625');
+  if (currentView === '3d') {
+    clock.style.transform = `scale(0.6) rotateX(${20 + rotationX}deg) rotateY(${15 + rotationY}deg)`;
+  } else {
+    clock.style.transform = 'scale(0.8)';
+  }
+}
+
+// Simple and clean 3D effect - no complex cube creation needed
 
 // Filter by category
 function filterByCategory(category) {
@@ -1718,6 +1826,11 @@ const maxScale = 10;
 let currentRes = "low";
 
 function updateZoom() {
+  // Don't update zoom transforms in 3D mode
+  if (currentView === '3d') {
+    return;
+  }
+  
   holder.style.transform = `scale(${scale})`;
 
   let newRes = "low";
@@ -1729,17 +1842,23 @@ function updateZoom() {
   if (newRes !== currentRes) {
     currentRes = newRes;
     imgRefs.forEach(({ img }) => {
-      img.src = img.dataset[currentRes];
+      // Don't change image resolution in 3D mode (we use low-res intentionally)
+      if (currentView !== '3d') {
+        img.src = img.dataset[currentRes];
+      }
     });
   }
 
   const explodeFactor = Math.max(0, Math.min(1, (scale - 6) / 4));
   imgRefs.forEach(({ div }) => {
-    const x = div.dataset.x - 40;
-    const y = div.dataset.y - 17;
-    const dx = x * explodeFactor * 12;
-    const dy = y * explodeFactor * 4;
-    div.style.transform = `translate(${dx}px, ${dy}px)`;
+    // Don't apply explode effect in 3D mode
+    if (currentView !== '3d') {
+      const x = div.dataset.x - 40;
+      const y = div.dataset.y - 17;
+      const dx = x * explodeFactor * 12;
+      const dy = y * explodeFactor * 4;
+      div.style.transform = `translate(${dx}px, ${dy}px)`;
+    }
   });
 }
 
