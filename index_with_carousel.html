@@ -1,0 +1,1770 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>625 Industries</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;900&display=swap');
+        
+        @font-face {
+            font-family: 'Bitcount Mono Light';
+            src: url('./Fonts/BitcountGridSingle-LightCircle.otf') format('opentype');
+            font-weight: 300;
+            font-style: normal;
+            font-display: swap;
+        }
+        
+        html, body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            height: 100%;
+            background: black;
+            font-family: 'Inter', sans-serif;
+        }
+
+        #clock625-container {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            cursor: grab;
+            position: relative;
+        }
+
+        /* Toggle Container */
+        #toggle-container {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        #toggle-button {
+            width: 40px;
+            height: 20px;
+            background: transparent;
+            border: 2px solid white;
+            border-radius: 10px;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        #toggle-button:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        #toggle-circle {
+            width: 12px;
+            height: 12px;
+            background: white;
+            border-radius: 50%;
+            position: absolute;
+            top: 50%;
+            left: 3px;
+            transform: translateY(-50%);
+            transition: all 0.3s ease;
+        }
+
+        #toggle-button.active #toggle-circle {
+            transform: translateX(20px) translateY(-50%);
+        }
+
+        /* Project List */
+        #project-list {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 500;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #project-list.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        #project-list-content {
+            max-width: 800px;
+            max-height: 80vh;
+            overflow-y: auto;
+            padding: 40px;
+            color: white;
+            text-align: center;
+            /* Hide scrollbar */
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+
+        /* Hide scrollbar for WebKit browsers */
+        #project-list-content::-webkit-scrollbar {
+            display: none;
+        }
+
+        #project-list-content h2 {
+            font-weight: 900;
+            font-size: 2.5rem;
+            margin-bottom: 30px;
+            text-align: center;
+            font-family: 'Bitcount Mono Light', monospace;
+        }
+
+        .year-section {
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .year-title {
+            font-weight: 300;
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            color: #ffffff;
+            font-family: 'Bitcount Mono Light', monospace;
+            text-align: center;
+        }
+
+        .project-item {
+            font-weight: 300;
+            font-size: 0.9rem;
+            margin-bottom: 8px;
+            line-height: 1.4;
+            color: #cccccc;
+            transition: color 0.2s ease;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            text-align: center;
+            transform: rotateX(90deg);
+            opacity: 0;
+            animation: slotMachineIn 0.6s ease-out forwards;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+        }
+
+        .project-item:hover {
+            color: #ffffff;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        @keyframes slotMachineIn {
+            0% {
+                transform: rotateX(90deg);
+                opacity: 0;
+            }
+            100% {
+                transform: rotateX(0deg);
+                opacity: 1;
+            }
+        }
+
+        /* Clock Display */
+        #clock625 {
+            display: grid;
+            grid-template-columns: repeat(81, 16px);
+            grid-template-rows: repeat(35, 16px);
+            gap: 3px;
+            transform-origin: center center;
+            width: max-content;
+            margin: 40px auto;
+            transition: transform 0.05s linear, opacity 0.3s ease;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            translate: -50% -50%;
+            transform-style: preserve-3d;
+        }
+
+        #clock625.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .tile {
+            width: 16px;
+            height: 16px;
+            transition: transform 0.2s ease-out, filter 0.3s ease;
+            z-index: 0;
+            cursor: pointer;
+            position: relative;
+            transform-style: preserve-3d;
+            perspective: 1000px;
+            margin: 1px;
+            transform: translateZ(0px);
+        }
+
+        .tile img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            border-radius: 4px;
+            user-select: none;
+            pointer-events: none;
+            transition: transform 0.2s ease-out;
+            transform: translateZ(4px);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+        }
+        
+        .hovered img {
+            transform: scale(1.25);
+            z-index: 10;
+        }
+
+        .dimmed {
+            filter: brightness(0.4);
+            z-index: 0;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: black;
+            overflow: hidden;
+        }
+
+        .modal-content {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            color: white;
+            font-family: 'Inter', sans-serif;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .close-button {
+            color: white;
+            font-size: 48px;
+            font-weight: 300;
+            position: absolute;
+            right: 40px;
+            top: 40px;
+            cursor: pointer;
+            z-index: 2001;
+            transition: color 0.2s ease;
+            font-family: 'Bitcount Mono Light', monospace;
+            line-height: 1;
+        }
+
+        .close-button:hover {
+            color: #ccc;
+        }
+
+        .modal-header {
+            position: absolute;
+            top: 50%;
+            left: 40px;
+            transform: translateY(-400px);
+            z-index: 2001;
+            max-width: 60%;
+        }
+
+        .modal-header h2 {
+            margin: 0 0 10px 0;
+            font-size: 2.5rem;
+            font-weight: 300;
+            color: white;
+            font-family: 'Bitcount Mono Light', monospace;
+            line-height: 1.2;
+        }
+
+        .modal-header p {
+            margin: 0;
+            color: #ccc;
+            font-size: 1.2rem;
+            font-family: 'Bitcount Mono Light', monospace;
+        }
+
+        .modal-body {
+            width: 100%;
+            height: 100%;
+            padding: 120px 40px 40px 40px;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #modal-carousel {
+            width: 100%;
+            height: 70vh;
+            overflow-x: auto;
+            overflow-y: hidden;
+            white-space: nowrap;
+            scroll-behavior: auto;
+            /* Hide scrollbar */
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+            display: flex;
+            align-items: center;
+            gap: 0;
+            padding: 0;
+            background: transparent;
+        }
+        
+        #modal-carousel img {
+            height: 60vh !important;
+            width: auto !important;
+            max-width: none !important;
+            object-fit: contain !important;
+            flex-shrink: 0 !important;
+            border-radius: 4px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.8);
+            border: none;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        #modal-carousel img:hover {
+            transform: scale(1.05);
+            box-shadow: 0 12px 48px rgba(0, 0, 0, 0.9);
+        }
+
+        #modal-description {
+            position: absolute;
+            bottom: 40px;
+            left: 40px;
+            right: 40px;
+            line-height: 1.6;
+            color: #ddd;
+            font-family: 'Bitcount Mono Light', monospace;
+            font-size: 1rem;
+            max-width: 800px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div id="clock625-container">
+        <div id="toggle-container">
+            <div id="toggle-button">
+                <div id="toggle-circle"></div>
+            </div>
+        </div>
+        
+        <div id="clock625"></div>
+        
+        <div id="project-list">
+            <div id="project-list-content">
+                <h2>INDEX</h2>
+                <div id="projects-container"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Project Modal -->
+    <div id="project-modal" class="modal">
+        <div class="modal-content">
+            <div class="close-button">×</div>
+            <div class="modal-header">
+                <h2 id="modal-title"></h2>
+                <p id="modal-date"></p>
+            </div>
+            <div class="modal-body">
+                <div id="modal-carousel"></div>
+                <div id="modal-description"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const WIDTH = 25, HEIGHT = 35, DIGIT_SPACING = 3, NUM_IMAGES = 150;
+        const BASE_PATH = "images/";
+
+        const poolPaths = {
+            low: "low_res",
+            small: "small_res",
+            medium: "medium_res",
+            high1200: "high_res_1200",
+            high: "high_res"
+        };
+
+        // Project data with image mappings
+        const projects = {
+  "2018": [
+    {
+      "title": "AIR MAX DAY",
+      "date": "2018.03.26",
+      "location": "BROOKLYN",
+      "description": "Nike Air Max Day event in Brooklyn.",
+      "images": [
+        100,
+        101,
+        102
+      ]
+    },
+    {
+      "title": "KYRIE SNEAKER CUSTOMIZATION",
+      "date": "2018.09.28",
+      "location": "BROOKLYN",
+      "description": "Nike Kyrie Sneaker Customization event in Brooklyn.",
+      "images": [
+        105,
+        106,
+        107
+      ]
+    },
+    {
+      "title": "MAKERS STUDIO",
+      "date": "2018.10.18",
+      "location": "LOS ANGELES",
+      "description": "Nike Makers Studio event in Los Angeles.",
+      "images": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "title": "SOCIAL STUDIES",
+      "date": "2018.11.16",
+      "location": "NEW YORK",
+      "description": "Nike Social Studies event in New York.",
+      "images": [
+        110,
+        111,
+        112
+      ]
+    },
+    {
+      "title": "MAKERS STUDIO",
+      "date": "2018.12.01",
+      "location": "ROOSEVELT FIELD MALL",
+      "description": "Nike Makers Studio event in Roosevelt Field Mall.",
+      "images": [
+        6,
+        7,
+        8,
+        9,
+        10
+      ]
+    },
+    {
+      "title": "GIFTING SUITE",
+      "date": "2018.12.06",
+      "location": "MIAMI",
+      "description": "Nike Gifting Suite event in Miami.",
+      "images": [
+        115,
+        116,
+        117
+      ]
+    },
+    {
+      "title": "MAKERS STUDIO",
+      "date": "2018.12.12",
+      "location": "LOS ANGELES",
+      "description": "Nike Makers Studio event in Los Angeles.",
+      "images": [
+        120,
+        121,
+        122
+      ]
+    },
+    {
+      "title": "MAKERS STUDIO",
+      "date": "2018.12.16",
+      "location": "LOS ANGELES",
+      "description": "Nike Makers Studio event in Los Angeles.",
+      "images": [
+        125,
+        126,
+        127
+      ]
+    }
+  ],
+  "2019": [
+    {
+      "title": "ALL-STAR WEEKEND",
+      "date": "2019.02.15",
+      "location": "CHARLOTTE",
+      "description": "Nike All-Star Weekend event in Charlotte.",
+      "images": [
+        130,
+        131,
+        132
+      ]
+    },
+    {
+      "title": "AIR MAX WEEK",
+      "date": "2019.03.22",
+      "location": "NEW YORK",
+      "description": "Nike Air Max Week event in New York.",
+      "images": [
+        135,
+        136,
+        137
+      ]
+    },
+    {
+      "title": "CUSTOM POLO (SNKRS)",
+      "date": "2019.07.31",
+      "location": "NYC",
+      "description": "Nike Custom Polo (SNKRS) event in NYC.",
+      "images": [
+        140,
+        141,
+        142
+      ]
+    },
+    {
+      "title": "LEVI\u2019S \u00d7 CENTURY 21",
+      "date": "2019.10.03",
+      "location": "NYC",
+      "description": "Levi\u2019s Levi\u2019s \u00d7 Century 21 event in NYC.",
+      "images": [
+        145,
+        146,
+        147
+      ]
+    },
+    {
+      "title": "LEVI\u2019S HAUS",
+      "date": "2019.12.04",
+      "location": "MIAMI",
+      "description": "Levi\u2019s Levi\u2019s Haus event in Miami.",
+      "images": [
+        150,
+        151,
+        152
+      ]
+    }
+  ],
+  "2020": [],
+  "COVID": [
+    {
+      "title": "VERDY \u00d7 LEVI\u2019S HAUS",
+      "date": "2020.01.24",
+      "location": "MIAMI",
+      "description": "Verdy Verdy \u00d7 Levi\u2019s Haus event in Miami.",
+      "images": [
+        155,
+        156,
+        157
+      ]
+    },
+    {
+      "title": "SUPER BOWL LIV",
+      "date": "2020.01.26",
+      "location": "MIAMI",
+      "description": "Nike Super Bowl LIV event in Miami.",
+      "images": [
+        160,
+        161,
+        162
+      ]
+    },
+    {
+      "title": "LEVI\u2019S \u00d7 BAPE",
+      "date": "2020.03.05",
+      "location": "MIAMI",
+      "description": "Levi\u2019s Levi\u2019s \u00d7 BAPE event in Miami.",
+      "images": [
+        165,
+        166,
+        167
+      ]
+    },
+    {
+      "title": "NIKEBYYOU",
+      "date": "2021.07.22",
+      "location": "CHICAGO",
+      "description": "Nike NikeByYou event in Chicago.",
+      "images": [
+        170,
+        171,
+        172
+      ]
+    },
+    {
+      "title": "BACK2SCHOOL PHOTOSHOOT",
+      "date": "2021.08.16",
+      "location": "NYC",
+      "description": "Nike Back2School Photoshoot event in NYC.",
+      "images": [
+        175,
+        176,
+        177
+      ]
+    },
+    {
+      "title": "CONGA / SALESFORCE AF1 CUSTOM",
+      "date": "2021.10.26",
+      "location": "NYC",
+      "description": "Nike Conga / Salesforce AF1 Custom event in NYC.",
+      "images": [
+        180,
+        181,
+        182
+      ]
+    },
+    {
+      "title": "ASTROWORLD \u00d7 LEVI\u2019S",
+      "date": "2021.11.05",
+      "location": "HOUSTON",
+      "description": "AstroWorld AstroWorld \u00d7 Levi\u2019s event in Houston.",
+      "images": [
+        185,
+        186,
+        187
+      ]
+    },
+    {
+      "title": "ROOKIE OF THE YEAR CUSTOM",
+      "date": "2021.11.16",
+      "location": "NYC",
+      "description": "Nike Rookie of the Year Custom event in NYC.",
+      "images": [
+        190,
+        191,
+        192
+      ]
+    },
+    {
+      "title": "ART BASEL \u00d7 CHASE PRIVATE CLIENT",
+      "date": "2021.12.02",
+      "location": "MIAMI",
+      "description": "Art Basel Art Basel \u00d7 Chase Private Client event in Miami.",
+      "images": [
+        195,
+        196,
+        197
+      ]
+    },
+    {
+      "title": "ART BASEL \u00d7 META",
+      "date": "2021.12.02",
+      "location": "MIAMI",
+      "description": "Art Basel Art Basel \u00d7 META event in Miami.",
+      "images": [
+        200,
+        201,
+        202
+      ]
+    }
+  ],
+  "2022": [
+    {
+      "title": "NIKEBYYOU \u2013 SUPER BOWL LVI",
+      "date": "2022.02.03",
+      "location": "LOS ANGELES",
+      "description": "Nike NikeByYou \u2013 Super Bowl LVI event in Los Angeles.",
+      "images": [
+        11,
+        12,
+        13,
+        14,
+        15
+      ]
+    },
+    {
+      "title": "SHE RUNS BOSTON (BRA CUSTOMIZATION)",
+      "date": "2022.03.23",
+      "location": "NYC",
+      "description": "Nike She Runs Boston (Bra Customization) event in NYC.",
+      "images": [
+        205,
+        206,
+        207
+      ]
+    },
+    {
+      "title": "SNKRS PHOTOSHOOT",
+      "date": "2022.03.31",
+      "location": "NYC",
+      "description": "Nike SNKRS Photoshoot event in NYC.",
+      "images": [
+        210,
+        211,
+        212
+      ]
+    },
+    {
+      "title": "LEVI\u2019S HOUSE \u00d7 DAISY WORLD",
+      "date": "2022.04.05",
+      "location": "LOS ANGELES",
+      "description": "Levi\u2019s Levi\u2019s House \u00d7 Daisy World event in Los Angeles.",
+      "images": [
+        16,
+        17,
+        18,
+        19,
+        20
+      ]
+    },
+    {
+      "title": "LEVI\u2019S \u00d7 COME",
+      "date": "2022.04.07",
+      "location": "WATTS",
+      "description": "Levi\u2019s Levi\u2019s \u00d7 COME event in Watts.",
+      "images": [
+        21,
+        22,
+        23,
+        24,
+        25
+      ]
+    },
+    {
+      "title": "LEVI\u2019S \u00d7 DAISY WORLD",
+      "date": "2022.04.09",
+      "location": "SANTA MONICA",
+      "description": "Levi\u2019s Levi\u2019s \u00d7 Daisy World event in Santa Monica.",
+      "images": [
+        215,
+        216,
+        217
+      ]
+    },
+    {
+      "title": "BILLIE EILISH \u00d7 NIKE (UPCYCLE)",
+      "date": "2022.04.19",
+      "location": "LOS ANGELES",
+      "description": "Billie Eilish Billie Eilish \u00d7 Nike (Upcycle) event in Los Angeles.",
+      "images": [
+        26,
+        27,
+        28,
+        29,
+        30
+      ]
+    },
+    {
+      "title": "NFL DRAFT DAY",
+      "date": "2022.04.27",
+      "location": "LAS VEGAS",
+      "description": "Nike NFL Draft Day event in Las Vegas.",
+      "images": [
+        31,
+        32,
+        33,
+        34,
+        35
+      ]
+    },
+    {
+      "title": "IN-STORE CUSTOMIZATION",
+      "date": "2022.05.19",
+      "location": "NYC",
+      "description": "Levi\u2019s In-Store Customization event in NYC.",
+      "images": [
+        220,
+        221,
+        222
+      ]
+    },
+    {
+      "title": "WNBA NIKEBYYOU",
+      "date": "2022.07.07",
+      "location": "CHICAGO",
+      "description": "Nike WNBA NikeByYou event in Chicago.",
+      "images": [
+        225,
+        226,
+        227
+      ]
+    },
+    {
+      "title": "MLB NIKEBYYOU",
+      "date": "2022.07.15",
+      "location": "LOS ANGELES",
+      "description": "Nike MLB NikeByYou event in Los Angeles.",
+      "images": [
+        36,
+        37,
+        38,
+        39,
+        40
+      ]
+    },
+    {
+      "title": "ROLLING LOUD \u00d7 LEVI\u2019S",
+      "date": "2022.07.21",
+      "location": "MIAMI",
+      "description": "Rolling Loud Rolling Loud \u00d7 Levi\u2019s event in Miami.",
+      "images": [
+        41,
+        42,
+        43,
+        44,
+        45
+      ]
+    },
+    {
+      "title": "BEYOND THE COURT",
+      "date": "2022.09.08",
+      "location": "NYC",
+      "description": "Nike Beyond The Court event in NYC.",
+      "images": [
+        230,
+        231,
+        232
+      ]
+    },
+    {
+      "title": "KID CUDI \u00d7 LEVI\u2019S",
+      "date": "2022.09.17",
+      "location": "CLEVELAND",
+      "description": "Kid Cudi Kid Cudi \u00d7 Levi\u2019s event in Cleveland.",
+      "images": [
+        235,
+        236,
+        237
+      ]
+    },
+    {
+      "title": "AMAZON \u00d7 CULTURECON",
+      "date": "2022.10.08",
+      "location": "NYC",
+      "description": "Amazon Amazon \u00d7 CultureCon event in NYC.",
+      "images": [
+        240,
+        241,
+        242
+      ]
+    },
+    {
+      "title": "NIKEBYYOU \u2013 CHICAGO SCHOOL",
+      "date": "2022.11.04",
+      "location": "CHICAGO",
+      "description": "Nike NikeByYou \u2013 Chicago School event in Chicago.",
+      "images": [
+        245,
+        246,
+        247
+      ]
+    }
+  ],
+  "2023": [
+    {
+      "title": "SUPER BOWL LVII \u00d7 UNDFTD",
+      "date": "2023.02.07",
+      "location": "PHOENIX",
+      "description": "Nike Super Bowl LVII \u00d7 UNDFTD event in Phoenix.",
+      "images": [
+        46,
+        47,
+        48,
+        49,
+        50
+      ]
+    },
+    {
+      "title": "NIKEBYYOU \u2013 SUPER BOWL",
+      "date": "2023.02.08",
+      "location": "PHOENIX",
+      "description": "Nike NikeByYou \u2013 Super Bowl event in Phoenix.",
+      "images": [
+        51,
+        52,
+        53,
+        54,
+        55
+      ]
+    },
+    {
+      "title": "ROLLING LOUD \u00d7 LEVI\u2019S",
+      "date": "2023.03.04",
+      "location": "LOS ANGELES",
+      "description": "Rolling Loud Rolling Loud \u00d7 Levi\u2019s event in Los Angeles.",
+      "images": [
+        56,
+        57,
+        58,
+        59,
+        60
+      ]
+    },
+    {
+      "title": "ROLLING LOUD \u00d7 LEVI\u2019S",
+      "date": "2023.04.11",
+      "location": "PATTAYA",
+      "description": "Rolling Loud Rolling Loud \u00d7 Levi\u2019s event in Pattaya.",
+      "images": [
+        250,
+        251,
+        252
+      ]
+    },
+    {
+      "title": "LEVI\u2019S 501 DAY",
+      "date": "2023.05.18",
+      "location": "SAN FRANCISCO",
+      "description": "Levi\u2019s Levi\u2019s 501 Day event in San Francisco.",
+      "images": [
+        61,
+        62,
+        63,
+        64,
+        65
+      ]
+    },
+    {
+      "title": "ROLLING LOUD \u00d7 LEVI\u2019S",
+      "date": "2023.07.05",
+      "location": "PORTIM\u00c3O",
+      "description": "Rolling Loud Rolling Loud \u00d7 Levi\u2019s event in Portim\u00e3o.",
+      "images": [
+        66,
+        67,
+        68,
+        69
+      ]
+    },
+    {
+      "title": "ROLLING LOUD \u00d7 LEVI\u2019S",
+      "date": "2023.07.09",
+      "location": "MUNICH",
+      "description": "Rolling Loud Rolling Loud \u00d7 Levi\u2019s event in Munich.",
+      "images": [
+        255,
+        256,
+        257
+      ]
+    },
+    {
+      "title": "NIKE TEA ROOM",
+      "date": "2023.07.13",
+      "location": "LAS VEGAS",
+      "description": "Nike Nike Tea Room event in Las Vegas.",
+      "images": [
+        70,
+        71,
+        72,
+        73
+      ]
+    },
+    {
+      "title": "REMIX YOUR GAME",
+      "date": "2023.07.20",
+      "location": "BRONX",
+      "description": "Footlocker Remix Your Game event in Bronx.",
+      "images": [
+        260,
+        261,
+        262
+      ]
+    },
+    {
+      "title": "ROLLING LOUD \u00d7 LEVI\u2019S",
+      "date": "2023.07.21",
+      "location": "MIAMI",
+      "description": "Rolling Loud Rolling Loud \u00d7 Levi\u2019s event in Miami.",
+      "images": [
+        265,
+        266,
+        267
+      ]
+    },
+    {
+      "title": "NYVNY",
+      "date": "2023.08.05",
+      "location": "NYC",
+      "description": "Snipes NYvNY event in NYC.",
+      "images": [
+        270,
+        271,
+        272
+      ]
+    },
+    {
+      "title": "HIP HOP 50TH",
+      "date": "2023.08.11",
+      "location": "NYC",
+      "description": "Nike Hip Hop 50th event in NYC.",
+      "images": [
+        275,
+        276,
+        277
+      ]
+    },
+    {
+      "title": "YARDRUNNERS NIKEBYYOU",
+      "date": "2023.10.27",
+      "location": "NIKE SOHO",
+      "description": "Nike YardRunners NikeByYou event in Nike SOHO.",
+      "images": [
+        280,
+        281,
+        282
+      ]
+    },
+    {
+      "title": "BOROUGHS NIKEBYYOU",
+      "date": "2023.11.16",
+      "location": "NIKE HOI",
+      "description": "Nike Boroughs NikeByYou event in Nike HOI.",
+      "images": [
+        285,
+        286,
+        287
+      ]
+    },
+    {
+      "title": "TALENT NIKEBYYOU",
+      "date": "2023.11.27",
+      "location": "NIKE SOHO",
+      "description": "Nike Talent NikeByYou event in Nike SOHO.",
+      "images": [
+        290,
+        291,
+        292
+      ]
+    },
+    {
+      "title": "NIKEBYYOU",
+      "date": "2023.12.09",
+      "location": "NIKE SOHO",
+      "description": "Nike NikeByYou event in Nike SOHO.",
+      "images": [
+        295,
+        296,
+        297
+      ]
+    }
+  ],
+  "2024": [
+    {
+      "title": "SUPER BOWL LVIII NIKEBYYOU",
+      "date": "2024.02.06",
+      "location": "LAS VEGAS",
+      "description": "Nike Super Bowl LVIII NikeByYou event in Las Vegas.",
+      "images": [
+        74,
+        75,
+        76,
+        77,
+        78
+      ]
+    },
+    {
+      "title": "ROLLING LOUD \u00d7 MODELO",
+      "date": "2024.03.14",
+      "location": "LOS ANGELES",
+      "description": "Rolling Loud Rolling Loud \u00d7 Modelo event in Los Angeles.",
+      "images": [
+        79,
+        80,
+        81,
+        82,
+        83
+      ]
+    },
+    {
+      "title": "AIRMAX DN NIKEBYYOU",
+      "date": "2024.03.26",
+      "location": "NIKE SOHO",
+      "description": "Nike AirMax DN NikeByYou event in Nike SOHO.",
+      "images": [
+        300,
+        301,
+        302
+      ]
+    },
+    {
+      "title": "AIRMAX DN NIKEBYYOU",
+      "date": "2024.04.27",
+      "location": "NIKE SOHO",
+      "description": "Nike AirMax DN NikeByYou event in Nike SOHO.",
+      "images": [
+        305,
+        306,
+        307
+      ]
+    },
+    {
+      "title": "SPECIAL EVENT",
+      "date": "2024.05.21",
+      "location": "NIKE HOI",
+      "description": "Nike Special Event event in Nike HOI.",
+      "images": [
+        310,
+        311,
+        312
+      ]
+    },
+    {
+      "title": "AIR STUDIOS",
+      "date": "2024.07.08",
+      "location": "NIKE HOI",
+      "description": "Nike AIR STUDIOS event in Nike HOI.",
+      "images": [
+        315,
+        316,
+        317
+      ]
+    },
+    {
+      "title": "NIKEBYYOU",
+      "date": "2024.07.17",
+      "location": "NIKE SOHO",
+      "description": "Nike NikeByYou event in Nike SOHO.",
+      "images": [
+        320,
+        321,
+        322
+      ]
+    },
+    {
+      "title": "AUCTION EVENT",
+      "date": "2024.07.17",
+      "location": "NYC",
+      "description": "Christie\u2019s Auction Event event in NYC.",
+      "images": [
+        325,
+        326,
+        327
+      ]
+    },
+    {
+      "title": "AIRMAX DN NIKEBYYOU",
+      "date": "2024.07.27",
+      "location": "NIKE SOHO",
+      "description": "Nike AirMax DN NikeByYou event in Nike SOHO.",
+      "images": [
+        330,
+        331,
+        332
+      ]
+    },
+    {
+      "title": "AIRMAX DN NIKEBYYOU",
+      "date": "2024.08.10",
+      "location": "NIKE HOI",
+      "description": "Nike AirMax DN NikeByYou event in Nike HOI.",
+      "images": [
+        335,
+        336,
+        337
+      ]
+    },
+    {
+      "title": "VEGAS KICK OFF",
+      "date": "2024.09.01",
+      "location": "LAS VEGAS",
+      "description": "Modelo Vegas Kick Off event in Las Vegas.",
+      "images": [
+        84,
+        85,
+        86,
+        87,
+        88
+      ]
+    },
+    {
+      "title": "COMPLEX \u00d7 F1 RACING \u00d7 LEVI\u2019S",
+      "date": "2024.10.16",
+      "location": "AUSTIN",
+      "description": "Complex Complex \u00d7 F1 Racing \u00d7 Levi\u2019s event in Austin.",
+      "images": [
+        340,
+        341,
+        342
+      ]
+    },
+    {
+      "title": "NIKEBYYOU",
+      "date": "2024.10.23",
+      "location": "NIKE SOHO",
+      "description": "Nike NikeByYou event in Nike SOHO.",
+      "images": [
+        345,
+        346,
+        347
+      ]
+    },
+    {
+      "title": "NIKEBYYOU",
+      "date": "2024.10.30",
+      "location": "NIKE SOHO",
+      "description": "Nike NikeByYou event in Nike SOHO.",
+      "images": [
+        350,
+        351,
+        352
+      ]
+    },
+    {
+      "title": "MARATHON NIKEBYYOU",
+      "date": "2024.11.01",
+      "location": "NIKE SOHO",
+      "description": "Nike Marathon NikeByYou event in Nike SOHO.",
+      "images": [
+        355,
+        356,
+        357
+      ]
+    },
+    {
+      "title": "METHON NIKEBYYOU",
+      "date": "2024.11.03",
+      "location": "NIKE SOHO",
+      "description": "Nike Methon NikeByYou event in Nike SOHO.",
+      "images": [
+        360,
+        361,
+        362
+      ]
+    },
+    {
+      "title": "MUSEUM OF ICE CREAM",
+      "date": "2024.12.08",
+      "location": "NYC",
+      "description": "Museum of Ice Cream Museum of Ice Cream event in NYC.",
+      "images": [
+        365,
+        366,
+        367
+      ]
+    },
+    {
+      "title": "ROLLING LOUD \u00d7 MODELO",
+      "date": "2024.12.12",
+      "location": "MIAMI",
+      "description": "Rolling Loud Rolling Loud \u00d7 Modelo event in Miami.",
+      "images": [
+        370,
+        371,
+        372
+      ]
+    }
+  ],
+  "2025": [
+    {
+      "title": "NATIONAL CHAMPIONSHIP",
+      "date": "2025.01.18",
+      "location": "ATLANTA",
+      "description": "Modelo National Championship event in Atlanta.",
+      "images": [
+        375,
+        376,
+        377
+      ]
+    },
+    {
+      "title": "TXRX WORKSHOP",
+      "date": "2025.02.11",
+      "location": "HOUSTON",
+      "description": "Nike TXRX Workshop event in Houston.",
+      "images": [
+        89,
+        90,
+        91,
+        92,
+        93
+      ]
+    },
+    {
+      "title": "ALL STAR WEEKEND \u00d7 BOARDROOM",
+      "date": "2025.02.15",
+      "location": "SAN FRANCISCO",
+      "description": "Nike All Star Weekend \u00d7 Boardroom event in San Francisco.",
+      "images": [
+        94,
+        95,
+        96
+      ]
+    }
+  ]
+};
+
+        // Create image to project mapping
+        const imageToProjectMap = {};
+        Object.keys(projects).forEach(year => {
+            projects[year].forEach(project => {
+                project.images.forEach(imageNum => {
+                    imageToProjectMap[imageNum] = project;
+                });
+            });
+        });
+
+        function getPhotos(res, suffix = "") {
+            return Array.from({ length: NUM_IMAGES }, (_, i) =>
+                `${BASE_PATH}${poolPaths[res]}/img${String(i + 1).padStart(3, '0')}${suffix}.jpg`
+            );
+        }
+
+        function horizontalPill(width = 21, height = 4) {
+            const map = Array.from({ length: height }, () => Array(width).fill(1));
+            for (let r = 0; r < height; r++)
+                for (let c = 0; c < width; c++) {
+                    const d = Math.min(c, width - 1 - c);
+                    if ((r === 0 || r === height - 1) && d < 2) map[r][c] = 0;
+                }
+            return map;
+        }
+
+        function verticalPill(height = 13, width = 4) {
+            const map = Array.from({ length: height }, () => Array(width).fill(1));
+            for (let r = 0; r < height; r++)
+                for (let c = 0; c < width; c++) {
+                    const d = Math.min(r, height - 1 - r);
+                    if ((c === 0 || c === width - 1) && d < 2) map[r][c] = 0;
+                }
+            return map;
+        }
+
+        function blankDigit() {
+            return Array.from({ length: HEIGHT }, () => Array(WIDTH).fill(0));
+        }
+
+        function place(map, target, row, col) {
+            map.forEach((r, y) => {
+                r.forEach((val, x) => {
+                    const gridY = row + y;
+                    const gridX = col + x;
+                    if (val && target[gridY] && target[gridY][gridX] !== undefined) {
+                        // Place the main segment
+                        target[gridY][gridX] = 1;
+
+                        // Add 1-pixel transparent border around this segment
+                        for (let dy = -3; dy <= 3; dy++) {
+                            for (let dx = -3; dx <= 3; dx++) {
+                                const by = gridY + dy;
+                                const bx = gridX + dx;
+                                if (
+                                    (dy !== 0 || dx !== 0) && // skip the center pixel
+                                    target[by] &&
+                                    target[by][bx] !== undefined &&
+                                    target[by][bx] !== 1 // don't overwrite segment pixels
+                                ) {
+                                    target[by][bx] = 0; // transparent border
+                                }
+                            }
+                        }
+                    }
+                });
+            });
+        }
+
+        function buildDigit(segments) {
+            const digit = blankDigit();
+            const h = horizontalPill();
+            const v = verticalPill();
+            if (segments.includes(0)) place(h, digit, 0, 2);
+            if (segments.includes(6)) place(h, digit, 15, 2);
+            if (segments.includes(3)) place(h, digit, 30, 2);
+            if (segments.includes(1)) place(v, digit, 2, WIDTH - 6);
+            if (segments.includes(2)) place(v, digit, 17, WIDTH - 6);
+            if (segments.includes(5)) place(v, digit, 2, 2);
+            if (segments.includes(4)) place(v, digit, 17, 2);
+            return digit;
+        }
+
+        const segmentMap = {
+            6: [0, 5, 4, 3, 2, 6],
+            2: [0, 1, 6, 4, 3],
+            5: [0, 5, 6, 2, 3]
+        };
+
+        const digit6 = buildDigit(segmentMap[6]);
+        const digit2 = buildDigit(segmentMap[2]);
+        const digit5 = buildDigit(segmentMap[5]);
+        const spacer = Array(HEIGHT).fill(0).map(() => Array(DIGIT_SPACING).fill(0));
+        const combined = [];
+
+        for (let r = 0; r < HEIGHT; r++) {
+            combined.push([...digit6[r], ...spacer[r], ...digit2[r], ...spacer[r], ...digit5[r]]);
+        }
+
+        const litCount = combined.flat().filter(v => v).length;
+
+        function fillPool(arr) {
+            let pool = [];
+            while (pool.length < litCount) {
+                pool = pool.concat(arr);
+            }
+            return pool.slice(0, litCount);
+        }
+
+        const pools = {
+            low: fillPool(getPhotos("low", "-low")),
+            small: fillPool(getPhotos("small", "-small")),
+            medium: fillPool(getPhotos("medium", "-med")),
+            high1200: fillPool(getPhotos("high1200", "-high")),
+            high: fillPool(getPhotos("high"))
+        };
+
+        const holder = document.getElementById("clock625");
+        let imgRefs = [];
+        let index = 0;
+
+        combined.forEach((row, y) => {
+            row.forEach((cell, x) => {
+                const div = document.createElement("div");
+                div.className = "tile";
+                div.dataset.x = x;
+                div.dataset.y = y;
+                if (cell === 1) {
+                    const img = document.createElement("img");
+                    const src = pools.low[index];
+                    img.src = src;
+                    img.dataset.src = src;
+                    img.dataset.low = pools.low[index];
+                    img.dataset.small = pools.small[index];
+                    img.dataset.medium = pools.medium[index];
+                    img.dataset.high1200 = pools.high1200[index];
+                    img.dataset.high = pools.high[index];
+                    
+                    // Add project data to the image
+                    const imageNumber = index + 1; // Convert to 1-based indexing
+                    const project = imageToProjectMap[imageNumber];
+                    if (project) {
+                        img.dataset.projectTitle = project.title;
+                        img.dataset.projectDate = project.date;
+                        img.dataset.projectLocation = project.location;
+                        img.dataset.projectDescription = project.description;
+                    }
+                    
+                    div.appendChild(img);
+                    imgRefs.push({ div, img, key: src, imageNumber });
+                    index++;
+                }
+                holder.appendChild(div);
+            });
+        });
+
+        // Modal functionality
+        const modal = document.getElementById("project-modal");
+        const closeButton = document.querySelector(".close-button");
+
+        function setupInfiniteScroll(carousel, originalLength) {
+            let isScrolling = false;
+            const itemWidth = 320;
+            const totalWidth = itemWidth * originalLength;
+            
+            // Set initial scroll position to the middle set
+            carousel.scrollLeft = totalWidth;
+            
+            carousel.addEventListener('scroll', () => {
+                if (isScrolling) return;
+                
+                const scrollLeft = carousel.scrollLeft;
+                
+                // If scrolled to the end of the first set, jump to the middle set
+                if (scrollLeft >= totalWidth * 2) {
+                    isScrolling = true;
+                    carousel.scrollLeft = totalWidth;
+                    setTimeout(() => { isScrolling = false; }, 50);
+                }
+                // If scrolled to the beginning of the first set, jump to the middle set
+                else if (scrollLeft <= 0) {
+                    isScrolling = true;
+                    carousel.scrollLeft = totalWidth;
+                    setTimeout(() => { isScrolling = false; }, 50);
+                }
+            });
+        }
+
+        function showProjectModal(project) {
+            document.getElementById("modal-title").textContent = project.title;
+            document.getElementById("modal-date").textContent = `${project.date} – ${project.location}`;
+            document.getElementById("modal-description").textContent = project.description;
+            
+            // Create carousel with all project images
+            const carousel = document.getElementById("modal-carousel");
+            carousel.innerHTML = '';
+            
+            // Create infinite scroll by duplicating images 3 times
+            const allImages = [...project.images, ...project.images, ...project.images];
+            
+            allImages.forEach((imageNum, index) => {
+                const carouselItem = document.createElement("div");
+                carouselItem.className = "carousel-item";
+                carouselItem.style.display = "inline-block";
+                carouselItem.style.width = "300px";
+                carouselItem.style.marginRight = "20px";
+                carouselItem.style.verticalAlign = "top";
+                
+                const img = document.createElement("img");
+                img.src = `${BASE_PATH}medium_res/img${String(imageNum).padStart(3, '0')}-med.jpg`;
+                img.alt = `${project.title} - Image ${index + 1}`;
+                img.style.width = "100%";
+                img.style.height = "auto";
+                img.style.display = "block";
+                img.onerror = () => {
+                    carouselItem.style.display = 'none';
+                };
+                
+                carouselItem.appendChild(img);
+                carousel.appendChild(carouselItem);
+            });
+            
+            modal.style.display = "block";
+            
+            // Set up infinite scroll
+            setupInfiniteScroll(carousel, project.images.length);
+        }
+
+        function closeModal() {
+            modal.style.display = "none";
+        }
+
+        // Event listeners for modal
+        closeButton.addEventListener("click", closeModal);
+        window.addEventListener("click", (e) => {
+            if (e.target === modal) {
+                closeModal();
+            }
+        });
+
+        // Add click handlers to tiles
+        holder.addEventListener("click", (e) => {
+            const tile = e.target.closest(".tile");
+            if (!tile) return;
+            
+            // Add subtle click effect
+            tile.style.transform = "rotateX(8deg) rotateY(8deg) scale(0.95) translateZ(6px)";
+            setTimeout(() => {
+                tile.style.transform = "rotateX(0deg) rotateY(0deg) scale(1) translateZ(0px)";
+            }, 120);
+            
+            const img = tile.querySelector("img");
+            if (!img) return;
+            
+            // Get the image number from the imgRefs array
+            const imageNumber = imgRefs.find(ref => ref.img === img)?.imageNumber;
+            if (!imageNumber) return;
+            
+            const project = imageToProjectMap[imageNumber];
+            if (project) {
+                showProjectModal(project);
+            }
+        });
+          
+        // Add mouse wheel support for horizontal scrolling in modal
+        window.addEventListener("wheel", (e) => {
+            const modal = document.getElementById("project-modal");
+            const carousel = document.getElementById("modal-carousel");
+            
+            if (modal.style.display === "block" && carousel) {
+                e.preventDefault();
+                // Smooth scroll with momentum
+                const scrollAmount = e.deltaY * 2;
+                carousel.scrollLeft += scrollAmount;
+            }
+        }, { passive: false });
+
+        // Populate project list with staggered animations and click handlers
+        function populateProjectList() {
+            const container = document.getElementById("projects-container");
+            
+            Object.keys(projects).forEach(year => {
+                const yearSection = document.createElement("div");
+                yearSection.className = "year-section";
+                
+                const yearTitle = document.createElement("div");
+                yearTitle.className = "year-title";
+                yearTitle.textContent = year;
+                yearSection.appendChild(yearTitle);
+                
+                projects[year].forEach((project, index) => {
+                    const projectItem = document.createElement("div");
+                    projectItem.className = "project-item";
+                    projectItem.textContent = `${project.date} – ${project.title} – ${project.location}`;
+                    projectItem.style.animationDelay = `${index * 0.1}s`;
+                    
+                    // Add click handler for project list items
+                    projectItem.addEventListener("click", () => {
+                        showProjectModal(project);
+                    });
+                    
+                    yearSection.appendChild(projectItem);
+                });
+                
+                container.appendChild(yearSection);
+            });
+        }
+
+        // Toggle functionality
+        let isToggleActive = false;
+
+        function toggleProjects() {
+            const toggleButton = document.getElementById("toggle-button");
+            const projectList = document.getElementById("project-list");
+            const clock625 = document.getElementById("clock625");
+            
+            isToggleActive = !isToggleActive;
+            
+            if (isToggleActive) {
+                toggleButton.classList.add("active");
+                projectList.classList.add("active");
+                clock625.classList.add("hidden");
+            } else {
+                toggleButton.classList.remove("active");
+                projectList.classList.remove("active");
+                clock625.classList.remove("hidden");
+            }
+        }
+
+        // Event listeners
+        document.getElementById("toggle-button").addEventListener("click", toggleProjects);
+
+        // Enhanced mouse wheel handling for project list scrolling with faster scroll
+        window.addEventListener("wheel", e => {
+            const projectList = document.getElementById("project-list");
+            const projectListContent = document.getElementById("project-list-content");
+            
+            // If project list is active and mouse is over it, scroll the list faster
+            if (projectList.classList.contains("active") && 
+                (e.target.closest("#project-list") || e.target === projectListContent)) {
+                e.preventDefault();
+                // Increased scroll speed (multiply by 3 for faster scrolling)
+                projectListContent.scrollTop += e.deltaY * 3;
+                return;
+            }
+            
+            // Otherwise, handle zoom for the clock
+            if (e.ctrlKey || e.metaKey || e.altKey) return;
+            e.preventDefault();
+            const delta = Math.sign(e.deltaY);
+            scale = Math.min(maxScale, Math.max(minScale, scale - delta * 0.05));
+            updateZoom();
+        }, { passive: false });
+
+        let scale = 1;
+        const minScale = 0.5;
+        const maxScale = 10;
+        let currentRes = "low";
+
+        function updateZoom() {
+            holder.style.transform = `scale(${scale})`;
+
+            let newRes = "low";
+            if (scale >= 1.3) newRes = "small";
+            if (scale >= 2.3) newRes = "medium";
+            if (scale >= 5.5) newRes = "high1200";
+            if (scale >= 11) newRes = "high";
+
+            if (newRes !== currentRes) {
+                currentRes = newRes;
+                imgRefs.forEach(({ img }) => {
+                    img.src = img.dataset[currentRes];
+                });
+            }
+
+            // Scatter/explosion between 6x to 10x
+            const explodeFactor = Math.max(0, Math.min(1, (scale - 6) / 4));
+            imgRefs.forEach(({ div }) => {
+                const x = div.dataset.x - 40;
+                const y = div.dataset.y - 17;
+                const dx = x * explodeFactor * 12;
+                const dy = y * explodeFactor * 4;
+                div.style.transform = `translate(${dx}px, ${dy}px)`;
+            });
+        }
+
+        // Drag to move
+        let isDragging = false, lastX = 0, lastY = 0, offsetX = 0, offsetY = 0;
+        const container = document.getElementById("clock625-container");
+
+        container.addEventListener("mousedown", e => {
+            if (e.target.closest("#toggle-container") || e.target.closest("#project-list")) return;
+            isDragging = true;
+            lastX = e.clientX;
+            lastY = e.clientY;
+            container.style.cursor = "grabbing";
+            
+            // Reset all 3D effects when starting to drag
+            imgRefs.forEach(({ div }) => {
+                div.style.transform = "rotateX(0deg) rotateY(0deg) scale(1) translateZ(0px)";
+            });
+        });
+
+        window.addEventListener("mouseup", () => {
+            isDragging = false;
+            container.style.cursor = "grab";
+            
+            // Reset all 3D effects when stopping drag
+            imgRefs.forEach(({ div }) => {
+                div.style.transform = "rotateX(0deg) rotateY(0deg) scale(1) translateZ(0px)";
+            });
+        });
+
+        window.addEventListener("mousemove", e => {
+            if (!isDragging) return;
+            offsetX += e.clientX - lastX;
+            offsetY += e.clientY - lastY;
+            holder.style.left = `calc(50% + ${offsetX}px)`;
+            holder.style.top = `calc(50% + ${offsetY}px)`;
+            lastX = e.clientX;
+            lastY = e.clientY;
+        });
+
+        // Combined hover interactions with wind blow effect
+        holder.addEventListener("mouseover", e => {
+            const tile = e.target.closest(".tile");
+            if (!tile || !tile.firstChild?.dataset?.src) return;
+
+            // Don't apply wind blow effect when in highlight mode (zoomed in)
+            const highlightMode = scale >= 4.9;
+            if (!highlightMode && !isDragging) {
+                const rect = tile.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                
+                // Calculate subtle rotation based on mouse position
+                const centerX = rect.width / 2;
+                const centerY = rect.height / 2;
+                const rotateX = (y - centerY) / centerY * 6;
+                const rotateY = (x - centerX) / centerX * 6;
+                
+                // Apply wind blow effect
+                tile.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(1.02) translateZ(8px)`;
+                
+                // Auto-reset after 200ms
+                setTimeout(() => {
+                    if (!isDragging && scale < 4.9) {
+                        tile.style.transform = "rotateX(0deg) rotateY(0deg) scale(1) translateZ(0px)";
+                    }
+                }, 200);
+            }
+
+            // Handle highlight mode
+            const src = tile.firstChild.dataset.src;
+            imgRefs.forEach(({ div, img, key }) => {
+                div.classList.remove("dimmed", "hovered");
+                if (key === src) {
+                    div.classList.add("hovered");
+                } else if (highlightMode) {
+                    div.classList.add("dimmed");
+                }
+            });
+        });
+
+        holder.addEventListener("mouseout", () => {
+            imgRefs.forEach(({ div }) => {
+                div.classList.remove("dimmed", "hovered");
+            });
+        });
+
+        // Initialize
+        populateProjectList();
+        updateZoom();
+    </script>
+</body>
+</html>
