@@ -1391,14 +1391,17 @@
                     
                     const scrollLeft = carousel.scrollLeft;
                     
+                    // Dynamic threshold based on number of images - more images = more buffer
+                    const resetBuffer = Math.max(100, originalLength * 10); // Minimum 100px, or 10px per image
+                    
                     // If scrolled to the end of the third set, jump to the middle set
-                    if (scrollLeft >= totalWidth * 2 - 50) {
+                    if (scrollLeft >= totalWidth * 2 - resetBuffer) {
                         isScrolling = true;
                         carousel.scrollLeft = totalWidth;
                         setTimeout(() => { isScrolling = false; }, 50);
                     }
                     // If scrolled to the beginning of the first set, jump to the middle set
-                    else if (scrollLeft <= 50) {
+                    else if (scrollLeft <= resetBuffer) {
                         isScrolling = true;
                         carousel.scrollLeft = totalWidth;
                         setTimeout(() => { isScrolling = false; }, 50);
