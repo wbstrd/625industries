@@ -984,14 +984,9 @@
         const WIDTH = 25, HEIGHT = 35, DIGIT_SPACING = 3, NUM_IMAGES = 380;
         const BASE_PATH = "https://raw.githubusercontent.com/wbstrd/625industries/main/images/";
 
-        // Detect mobile device first, before creating any images
-        const isMobile = window.matchMedia('(max-width: 768px)').matches;
-
         const poolPaths = {
-            tiny: "tiny_res",
-            mobile: "mobile_res",
             low: "low_res",
-            small: "small_res", 
+            small: "small_res",
             medium: "medium_res",
             high1200: "high_res_1200",
             high: "high_res"
@@ -1203,14 +1198,9 @@
         });
 
         function getPhotos(res, suffix = "") {
-            return Array.from({ length: NUM_IMAGES }, (_, i) => {
-                const imgNum = String(i + 1).padStart(3, '0');
-                // Handle special cases for .jpeg extensions (img237, img239)
-                if (imgNum === '237' || imgNum === '239') {
-                    return `${BASE_PATH}${poolPaths[res]}/img${imgNum}${suffix}.jpeg`;
-                }
-                return `${BASE_PATH}${poolPaths[res]}/img${imgNum}${suffix}.jpg`;
-            });
+            return Array.from({ length: NUM_IMAGES }, (_, i) =>
+                `${BASE_PATH}${poolPaths[res]}/img${String(i + 1).padStart(3, '0')}${suffix}.jpg`
+            );
         }
 
         function horizontalPill(width = 21, height = 4) {
@@ -1307,8 +1297,6 @@
         }
 
         const pools = {
-            tiny: fillPool(getPhotos("tiny", "-tiny")),
-            mobile: fillPool(getPhotos("mobile", "-mobile")),
             low: fillPool(getPhotos("low", "-low")),
             small: fillPool(getPhotos("small", "-small")),
             medium: fillPool(getPhotos("medium", "-med")),
@@ -1328,11 +1316,9 @@
                 div.dataset.y = y;
                 if (cell === 1) {
                     const img = document.createElement("img");
-                    const src = isMobile ? pools.tiny[index] : pools.low[index];
+                    const src = pools.low[index];
                     img.src = src;
                     img.dataset.src = src;
-                    img.dataset.tiny = pools.tiny[index];
-                    img.dataset.mobile = pools.mobile[index];
                     img.dataset.low = pools.low[index];
                     img.dataset.small = pools.small[index];
                     img.dataset.medium = pools.medium[index];
@@ -1417,7 +1403,7 @@
                 carouselItem.style.flexShrink = "0";
                 
                 const img = document.createElement("img");
-                // Use small resolution on mobile, medium on desktop for carousel
+                // Use lower resolution on mobile for better performance
                 const carouselRes = isMobile ? 'small_res' : 'medium_res';
                 const carouselSuffix = isMobile ? '-small' : '-med';
                 img.src = `${BASE_PATH}${carouselRes}/img${String(imageNum).padStart(3, '0')}${carouselSuffix}.jpg`;
@@ -1581,20 +1567,24 @@
             updateZoom();
         }, { passive: false });
 
+        // Detect mobile device
+        const isMobile = window.matchMedia('(max-width: 768px)').matches;
+        
         let scale = isMobile ? 0.3 : 1; // Start smaller on mobile
         const minScale = isMobile ? 0.1 : 0.5; // Allow much smaller zoom on mobile
         const maxScale = isMobile ? 8 : 15; // Reduced max zoom on mobile
-        let currentRes = isMobile ? "tiny" : "low";
+        let currentRes = "low";
 
         function updateZoom() {
             holder.style.transform = `scale(${scale})`;
 
-            let newRes = isMobile ? "tiny" : "low";
+            let newRes = "low";
             
             if (isMobile) {
-                // Mobile: Progressive small resolutions for smooth zoom
-                if (scale >= 1.0) newRes = "mobile";  // 150x150px
-                if (scale >= 3.0) newRes = "small";   // Cap at small for performance
+                // Use lower resolutions on mobile for better performance
+                if (scale >= 1.5) newRes = "small";
+                if (scale >= 3.0) newRes = "medium";
+                // Cap at medium resolution on mobile to prevent lag
             } else {
                 // Desktop resolution progression
                 if (scale >= 1.3) newRes = "small";
