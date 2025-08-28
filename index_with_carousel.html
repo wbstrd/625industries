@@ -1944,7 +1944,6 @@
         // Mobile zoom slider with performance optimization
         let zoomSliderDragging = false;
         let zoomUpdatePending = false;
-        let lastHapticTime = 0;
         
         function updateZoomSlider() {
             const track = document.getElementById('zoom-track');
@@ -1978,13 +1977,6 @@
                 
                 // Throttled updates for smooth performance
                 throttledZoomUpdate();
-                
-                // Throttled haptic feedback (max once per 100ms)
-                const now = Date.now();
-                if (now - lastHapticTime > 100) {
-                    hapticFeedback('selection');
-                    lastHapticTime = now;
-                }
             }
 
             // Mouse events for zoom slider
