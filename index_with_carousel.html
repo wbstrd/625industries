@@ -1214,6 +1214,7 @@
         }
 
         function closeModal() {
+            hapticFeedback('light'); // Subtle feedback when closing modal
             modal.style.display = "none";
         }
 
@@ -1282,9 +1283,10 @@
                     projectItem.style.animationDelay = `${index * 0.1}s`;
                     
                     // Add click handler for project list items
-                    projectItem.addEventListener("click", () => {
-                        showProjectModal(project);
-                    });
+                                    projectItem.addEventListener("click", () => {
+                    hapticFeedback('medium'); // Haptic feedback for project selection
+                    showProjectModal(project);
+                });
                     
                     yearSection.appendChild(projectItem);
                 });
@@ -1296,13 +1298,16 @@
         // Toggle functionality
         let isToggleActive = false;
 
-        function toggleProjects() {
+                function toggleProjects() {
             const toggleButton = document.getElementById("toggle-button");
             const projectList = document.getElementById("project-list");
             const clock625 = document.getElementById("clock625");
-            
+
+            // Haptic feedback for toggle
+            hapticFeedback('medium');
+
             isToggleActive = !isToggleActive;
-            
+
             if (isToggleActive) {
                 toggleButton.classList.add("active");
                 projectList.classList.add("active");
@@ -1455,9 +1460,35 @@
             });
         });
 
-        // Mobile touch support
+        // Mobile touch support with haptic feedback
         let touchStartX = 0, touchStartY = 0, isTouching = false;
         let lastTouchTime = 0;
+
+        // Haptic feedback helper function
+        function hapticFeedback(type = 'light') {
+            if ('vibrate' in navigator) {
+                switch(type) {
+                    case 'light':
+                        navigator.vibrate(10); // Very light tap
+                        break;
+                    case 'medium':
+                        navigator.vibrate(25); // Medium feedback
+                        break;
+                    case 'heavy':
+                        navigator.vibrate(50); // Strong feedback
+                        break;
+                    case 'success':
+                        navigator.vibrate([10, 30, 10]); // Success pattern
+                        break;
+                    case 'error':
+                        navigator.vibrate([50, 50, 50]); // Error pattern
+                        break;
+                    case 'selection':
+                        navigator.vibrate(5); // Very subtle selection
+                        break;
+                }
+            }
+        }
 
         // Touch events for clock container
         container.addEventListener("touchstart", e => {
@@ -1469,6 +1500,9 @@
             isTouching = true;
             lastX = touch.clientX;
             lastY = touch.clientY;
+            
+            // Haptic feedback for touch start
+            hapticFeedback('light');
             
             // Visual feedback
             container.style.cursor = "grabbing";
@@ -1504,6 +1538,9 @@
             if (touchDistance < 10) {
                 const tile = e.target.closest(".tile");
                 if (tile) {
+                    // Haptic feedback for successful tap
+                    hapticFeedback('medium');
+                    
                     // Trigger click animation
                     tile.style.transform = "rotateX(8deg) rotateY(8deg) scale(0.95) translateZ(6px)";
                     setTimeout(() => {
@@ -1537,6 +1574,9 @@
                     Math.pow(touch2.clientY - touch1.clientY, 2)
                 );
                 initialScale = scale;
+                
+                // Haptic feedback for pinch start
+                hapticFeedback('light');
             }
         }, { passive: false });
 
@@ -1594,7 +1634,9 @@
         container.addEventListener("touchend", e => {
             const now = Date.now();
             if (now - lastTouchEnd <= 300) {
-                // Double tap detected
+                // Double tap detected - haptic success feedback
+                hapticFeedback('success');
+                
                 scale = 1;
                 offsetX = 0;
                 offsetY = 0;
@@ -1604,6 +1646,39 @@
             }
             lastTouchEnd = now;
         }, { passive: true });
+
+        // Contact form haptic feedback
+        const contactForm = document.querySelector('.contact-form');
+        const contactInputs = contactForm.querySelectorAll('input, textarea');
+        const contactButton = contactForm.querySelector('button');
+
+        // Add haptic feedback to form interactions
+        contactInputs.forEach(input => {
+            input.addEventListener('focus', () => {
+                hapticFeedback('selection'); // Subtle feedback on focus
+            });
+        });
+
+        contactButton.addEventListener('click', (e) => {
+            e.preventDefault(); // Prevent actual form submission for demo
+            hapticFeedback('success'); // Success pattern for submit
+            
+            // Show a simple feedback (you can replace with actual form submission)
+            const originalText = contactButton.textContent;
+            contactButton.textContent = 'Sent!';
+            contactButton.style.background = '#4CAF50';
+            
+            setTimeout(() => {
+                contactButton.textContent = originalText;
+                contactButton.style.background = 'white';
+            }, 2000);
+        });
+
+        // Haptic feedback for contact trigger hover (mobile)
+        const contactTrigger = document.querySelector('.contact-trigger');
+        contactTrigger.addEventListener('touchstart', () => {
+            hapticFeedback('light');
+        });
 
         // Initialize
         populateProjectList();
