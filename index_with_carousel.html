@@ -1941,8 +1941,10 @@
             hapticFeedback('light');
         });
 
-        // Mobile zoom slider
+        // Mobile zoom slider with performance optimization
         let zoomSliderDragging = false;
+        let zoomUpdatePending = false;
+        let lastHapticTime = 0;
         
         function updateZoomSlider() {
             const track = document.getElementById('zoom-track');
@@ -1954,6 +1956,17 @@
             }
         }
 
+        function throttledZoomUpdate() {
+            if (!zoomUpdatePending) {
+                zoomUpdatePending = true;
+                requestAnimationFrame(() => {
+                    updateZoom();
+                    updateZoomSlider();
+                    zoomUpdatePending = false;
+                });
+            }
+        }
+
         if (isMobile) {
             const zoomSlider = document.getElementById('zoom-slider');
             const zoomThumb = document.getElementById('zoom-thumb');
@@ -1962,9 +1975,16 @@
                 const rect = zoomSlider.getBoundingClientRect();
                 const percentage = Math.max(0, Math.min(1, (clientX - rect.left) / rect.width));
                 scale = minScale + (maxScale - minScale) * percentage;
-                updateZoom();
-                updateZoomSlider();
-                hapticFeedback('selection');
+                
+                // Throttled updates for smooth performance
+                throttledZoomUpdate();
+                
+                // Throttled haptic feedback (max once per 100ms)
+                const now = Date.now();
+                if (now - lastHapticTime > 100) {
+                    hapticFeedback('selection');
+                    lastHapticTime = now;
+                }
             }
 
             // Mouse events for zoom slider
@@ -1983,7 +2003,7 @@
             zoomSlider.addEventListener('touchstart', (e) => {
                 handleZoomSliderMove(e.touches[0].clientX);
                 zoomSliderDragging = true;
-            });
+            }, { passive: true });
 
             document.addEventListener('mousemove', (e) => {
                 if (zoomSliderDragging) {
@@ -1995,7 +2015,7 @@
                 if (zoomSliderDragging) {
                     handleZoomSliderMove(e.touches[0].clientX);
                 }
-            });
+            }, { passive: true });
 
             document.addEventListener('mouseup', () => {
                 zoomSliderDragging = false;
