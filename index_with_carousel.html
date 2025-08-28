@@ -523,6 +523,202 @@
             font-weight: 200;
             max-width: 500px;
         }
+
+        /* Mobile Responsive Styles */
+        @media (max-width: 768px) {
+            /* Header adjustments */
+            .site-header {
+                padding: 15px 20px;
+                flex-direction: column;
+                gap: 15px;
+                align-items: center;
+                text-align: center;
+            }
+
+            .header-left h1 {
+                font-size: 2rem;
+            }
+
+            .header-tagline {
+                font-size: 0.65rem;
+                max-width: 250px;
+            }
+
+            /* Clock scaling for mobile */
+            #clock625 {
+                transform: scale(0.4);
+                margin: 20px auto;
+            }
+
+            /* Toggle container */
+            #toggle-container {
+                top: 10px;
+            }
+
+            /* Project list adjustments */
+            #project-list-content {
+                padding: 20px;
+                max-height: 90vh;
+            }
+
+            #project-list-content h2 {
+                font-size: 1.8rem;
+                margin-bottom: 20px;
+            }
+
+            .year-title {
+                font-size: 1.2rem;
+                margin-bottom: 10px;
+            }
+
+            .project-item {
+                font-size: 0.8rem;
+                margin-bottom: 6px;
+                padding: 6px;
+            }
+
+            /* Modal adjustments */
+            .close-button {
+                right: 20px;
+                top: 20px;
+                font-size: 36px;
+            }
+
+            .modal-header {
+                left: 20px;
+                right: 20px;
+                max-width: calc(100% - 40px);
+                transform: translateY(-200px);
+            }
+
+            .modal-header h2 {
+                font-size: 1.8rem;
+                line-height: 1.1;
+            }
+
+            .modal-header p {
+                font-size: 1rem;
+            }
+
+            .modal-body {
+                padding: 80px 20px 20px 20px;
+            }
+
+            #modal-carousel {
+                height: 50vh;
+            }
+
+            #modal-carousel img {
+                max-height: 45vh !important;
+                max-width: 300px !important;
+                margin-right: 20px;
+            }
+
+            #modal-description {
+                bottom: 20px;
+                left: 20px;
+                right: 20px;
+                font-size: 0.8rem;
+                max-width: none;
+                text-align: left;
+            }
+
+            /* Contact form mobile */
+            .contact-form {
+                width: 280px;
+                padding: 15px;
+                right: 10px;
+            }
+
+            .contact-form input,
+            .contact-form textarea {
+                font-size: 14px;
+                padding: 8px;
+            }
+
+            /* Touch improvements */
+            .tile {
+                cursor: pointer;
+            }
+
+            .project-item {
+                min-height: 44px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            /* Disable hover effects on touch devices */
+            .tile:hover img {
+                transform: none;
+            }
+
+            #modal-carousel img:hover {
+                transform: none;
+            }
+        }
+
+        @media (max-width: 480px) {
+            /* Extra small devices */
+            .site-header {
+                padding: 10px 15px;
+            }
+
+            .header-left h1 {
+                font-size: 1.5rem;
+            }
+
+            .header-tagline {
+                font-size: 0.6rem;
+                max-width: 200px;
+            }
+
+            #clock625 {
+                transform: scale(0.3);
+            }
+
+            #project-list-content {
+                padding: 15px;
+            }
+
+            #project-list-content h2 {
+                font-size: 1.5rem;
+            }
+
+            .modal-header h2 {
+                font-size: 1.5rem;
+            }
+
+            .modal-header p {
+                font-size: 0.9rem;
+            }
+
+            #modal-carousel img {
+                max-width: 250px !important;
+                margin-right: 15px;
+            }
+
+            .contact-form {
+                width: 260px;
+                right: 5px;
+            }
+        }
+
+        /* Landscape mobile adjustments */
+        @media (max-width: 768px) and (orientation: landscape) {
+            #clock625 {
+                transform: scale(0.5);
+                margin: 10px auto;
+            }
+
+            #modal-carousel {
+                height: 60vh;
+            }
+
+            #modal-carousel img {
+                max-height: 55vh !important;
+            }
+        }
     </style>
 </head>
 <body>
@@ -1258,6 +1454,156 @@
                 div.classList.remove("dimmed", "hovered");
             });
         });
+
+        // Mobile touch support
+        let touchStartX = 0, touchStartY = 0, isTouching = false;
+        let lastTouchTime = 0;
+
+        // Touch events for clock container
+        container.addEventListener("touchstart", e => {
+            if (e.target.closest("#toggle-container") || e.target.closest("#project-list")) return;
+            
+            const touch = e.touches[0];
+            touchStartX = touch.clientX;
+            touchStartY = touch.clientY;
+            isTouching = true;
+            lastX = touch.clientX;
+            lastY = touch.clientY;
+            
+            // Visual feedback
+            container.style.cursor = "grabbing";
+        }, { passive: false });
+
+        container.addEventListener("touchmove", e => {
+            if (!isTouching) return;
+            e.preventDefault(); // Prevent scrolling
+            
+            const touch = e.touches[0];
+            offsetX += touch.clientX - lastX;
+            offsetY += touch.clientY - lastY;
+            holder.style.left = `calc(50% + ${offsetX}px)`;
+            holder.style.top = `calc(50% + ${offsetY}px)`;
+            lastX = touch.clientX;
+            lastY = touch.clientY;
+        }, { passive: false });
+
+        container.addEventListener("touchend", e => {
+            isTouching = false;
+            container.style.cursor = "grab";
+            
+            // Check for tap (short touch without much movement)
+            const touch = e.changedTouches[0];
+            const touchEndX = touch.clientX;
+            const touchEndY = touch.clientY;
+            const touchDistance = Math.sqrt(
+                Math.pow(touchEndX - touchStartX, 2) + 
+                Math.pow(touchEndY - touchStartY, 2)
+            );
+            
+            // If it was a tap (< 10px movement), treat as click
+            if (touchDistance < 10) {
+                const tile = e.target.closest(".tile");
+                if (tile) {
+                    // Trigger click animation
+                    tile.style.transform = "rotateX(8deg) rotateY(8deg) scale(0.95) translateZ(6px)";
+                    setTimeout(() => {
+                        tile.style.transform = "rotateX(0deg) rotateY(0deg) scale(1) translateZ(0px)";
+                    }, 120);
+
+                    const img = tile.querySelector("img");
+                    if (img) {
+                        const imageNumber = imgRefs.find(ref => ref.img === img)?.imageNumber;
+                        if (imageNumber) {
+                            const project = imageToProjectMap[imageNumber];
+                            if (project) {
+                                showProjectModal(project);
+                            }
+                        }
+                    }
+                }
+            }
+        }, { passive: false });
+
+        // Pinch to zoom for mobile
+        let initialPinchDistance = 0;
+        let initialScale = 1;
+
+        container.addEventListener("touchstart", e => {
+            if (e.touches.length === 2) {
+                const touch1 = e.touches[0];
+                const touch2 = e.touches[1];
+                initialPinchDistance = Math.sqrt(
+                    Math.pow(touch2.clientX - touch1.clientX, 2) + 
+                    Math.pow(touch2.clientY - touch1.clientY, 2)
+                );
+                initialScale = scale;
+            }
+        }, { passive: false });
+
+        container.addEventListener("touchmove", e => {
+            if (e.touches.length === 2) {
+                e.preventDefault();
+                const touch1 = e.touches[0];
+                const touch2 = e.touches[1];
+                const currentPinchDistance = Math.sqrt(
+                    Math.pow(touch2.clientX - touch1.clientX, 2) + 
+                    Math.pow(touch2.clientY - touch1.clientY, 2)
+                );
+                
+                const pinchRatio = currentPinchDistance / initialPinchDistance;
+                const newScale = Math.min(maxScale, Math.max(minScale, initialScale * pinchRatio));
+                
+                if (newScale !== scale) {
+                    scale = newScale;
+                    updateZoom();
+                }
+            }
+        }, { passive: false });
+
+        // Touch support for carousel scrolling
+        let carouselTouchStartX = 0;
+        let carouselScrolling = false;
+
+        document.addEventListener("touchstart", e => {
+            const carousel = document.getElementById("modal-carousel");
+            const modal = document.getElementById("project-modal");
+            
+            if (modal.style.display === "block" && e.target.closest("#modal-carousel")) {
+                carouselTouchStartX = e.touches[0].clientX;
+                carouselScrolling = true;
+            }
+        }, { passive: true });
+
+        document.addEventListener("touchmove", e => {
+            if (carouselScrolling) {
+                const carousel = document.getElementById("modal-carousel");
+                const touchX = e.touches[0].clientX;
+                const deltaX = carouselTouchStartX - touchX;
+                
+                carousel.scrollLeft += deltaX * 2; // Amplify scroll for better feel
+                carouselTouchStartX = touchX;
+            }
+        }, { passive: true });
+
+        document.addEventListener("touchend", () => {
+            carouselScrolling = false;
+        }, { passive: true });
+
+        // Double tap to reset position/zoom on mobile
+        let lastTouchEnd = 0;
+        container.addEventListener("touchend", e => {
+            const now = Date.now();
+            if (now - lastTouchEnd <= 300) {
+                // Double tap detected
+                scale = 1;
+                offsetX = 0;
+                offsetY = 0;
+                holder.style.left = "50%";
+                holder.style.top = "50%";
+                updateZoom();
+            }
+            lastTouchEnd = now;
+        }, { passive: true });
 
         // Initialize
         populateProjectList();
