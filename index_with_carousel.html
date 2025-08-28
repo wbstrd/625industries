@@ -981,12 +981,14 @@
     </div>
 
     <script>
-        const WIDTH = 25, HEIGHT = 35, DIGIT_SPACING = 3, NUM_IMAGES = 150;
+        const WIDTH = 25, HEIGHT = 35, DIGIT_SPACING = 3, NUM_IMAGES = 380;
         const BASE_PATH = "https://raw.githubusercontent.com/wbstrd/625industries/main/images/";
 
-        const poolPaths = {
+                const poolPaths = {
+            tiny: "tiny_res",
+            mobile: "mobile_res",
             low: "low_res",
-            small: "small_res",
+            small: "small_res", 
             medium: "medium_res",
             high1200: "high_res_1200",
             high: "high_res"
@@ -1297,6 +1299,8 @@
         }
 
         const pools = {
+            tiny: fillPool(getPhotos("tiny", "-tiny")),
+            mobile: fillPool(getPhotos("mobile", "-mobile")),
             low: fillPool(getPhotos("low", "-low")),
             small: fillPool(getPhotos("small", "-small")),
             medium: fillPool(getPhotos("medium", "-med")),
@@ -1316,9 +1320,11 @@
                 div.dataset.y = y;
                 if (cell === 1) {
                     const img = document.createElement("img");
-                    const src = pools.low[index];
+                    const src = isMobile ? pools.tiny[index] : pools.low[index];
                     img.src = src;
                     img.dataset.src = src;
+                    img.dataset.tiny = pools.tiny[index];
+                    img.dataset.mobile = pools.mobile[index];
                     img.dataset.low = pools.low[index];
                     img.dataset.small = pools.small[index];
                     img.dataset.medium = pools.medium[index];
@@ -1403,7 +1409,7 @@
                 carouselItem.style.flexShrink = "0";
                 
                 const img = document.createElement("img");
-                // Use lower resolution on mobile for better performance
+                // Use small resolution on mobile, medium on desktop for carousel
                 const carouselRes = isMobile ? 'small_res' : 'medium_res';
                 const carouselSuffix = isMobile ? '-small' : '-med';
                 img.src = `${BASE_PATH}${carouselRes}/img${String(imageNum).padStart(3, '0')}${carouselSuffix}.jpg`;
@@ -1578,13 +1584,12 @@
         function updateZoom() {
             holder.style.transform = `scale(${scale})`;
 
-            let newRes = "low";
+            let newRes = isMobile ? "tiny" : "low";
             
             if (isMobile) {
-                // Use lower resolutions on mobile for better performance
-                if (scale >= 1.5) newRes = "small";
-                if (scale >= 3.0) newRes = "medium";
-                // Cap at medium resolution on mobile to prevent lag
+                // Mobile: Progressive small resolutions for smooth zoom
+                if (scale >= 1.0) newRes = "mobile";  // 150x150px
+                if (scale >= 3.0) newRes = "small";   // Cap at small for performance
             } else {
                 // Desktop resolution progression
                 if (scale >= 1.3) newRes = "small";
