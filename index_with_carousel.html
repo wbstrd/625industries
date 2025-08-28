@@ -636,12 +636,60 @@
             }
 
             #modal-description {
-                bottom: 20px;
+                bottom: 60px; /* Make room for carousel progress bar */
                 left: 20px;
                 right: 20px;
                 font-size: 0.8rem;
                 max-width: none;
                 text-align: left;
+            }
+
+            /* Carousel progress bar for mobile */
+            .carousel-progress-container {
+                position: absolute;
+                bottom: 20px;
+                left: 20px;
+                right: 20px;
+                background: rgba(0, 0, 0, 0.8);
+                padding: 10px 15px;
+                border-radius: 20px;
+                backdrop-filter: blur(10px);
+            }
+
+            .carousel-progress-bar {
+                width: 100%;
+                height: 4px;
+                background: rgba(255, 255, 255, 0.3);
+                border-radius: 2px;
+                position: relative;
+                cursor: pointer;
+            }
+
+            .carousel-progress-track {
+                height: 100%;
+                background: white;
+                border-radius: 2px;
+                width: 0%;
+                transition: width 0.2s ease;
+            }
+
+            .carousel-progress-thumb {
+                position: absolute;
+                top: -8px;
+                left: 0%;
+                width: 20px;
+                height: 20px;
+                background: white;
+                border-radius: 50%;
+                cursor: grab;
+                box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+                transform: translateX(-50%);
+                transition: left 0.2s ease;
+            }
+
+            .carousel-progress-thumb:active {
+                cursor: grabbing;
+                transform: translateX(-50%) scale(1.2);
             }
 
             /* Contact form mobile */
@@ -682,35 +730,64 @@
                 justify-content: center;
             }
 
-            /* Mobile zoom controls */
-            .mobile-zoom-controls {
+            /* Mobile zoom slider */
+            .zoom-slider-container {
                 position: fixed;
                 bottom: 20px;
                 left: 20px;
-                display: flex;
-                gap: 10px;
-                z-index: 1001;
-            }
-
-            .zoom-btn {
-                width: 40px;
-                height: 40px;
-                background: rgba(255, 255, 255, 0.9);
-                border: none;
-                border-radius: 50%;
-                font-size: 18px;
-                font-weight: bold;
-                color: black;
-                cursor: pointer;
+                right: 20px;
                 display: flex;
                 align-items: center;
-                justify-content: center;
-                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+                gap: 10px;
+                z-index: 1001;
+                background: rgba(0, 0, 0, 0.8);
+                padding: 10px 15px;
+                border-radius: 25px;
+                backdrop-filter: blur(10px);
             }
 
-            .zoom-btn:active {
-                transform: scale(0.95);
-                background: rgba(255, 255, 255, 0.7);
+            .zoom-slider {
+                flex: 1;
+                height: 4px;
+                background: rgba(255, 255, 255, 0.3);
+                border-radius: 2px;
+                position: relative;
+                cursor: pointer;
+            }
+
+            .zoom-slider-track {
+                height: 100%;
+                background: white;
+                border-radius: 2px;
+                width: 30%; /* Initial position */
+                transition: width 0.1s ease;
+            }
+
+            .zoom-slider-thumb {
+                position: absolute;
+                top: -8px;
+                right: -12px;
+                width: 20px;
+                height: 20px;
+                background: white;
+                border-radius: 50%;
+                cursor: grab;
+                box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+                transition: transform 0.1s ease;
+            }
+
+            .zoom-slider-thumb:active {
+                cursor: grabbing;
+                transform: scale(1.2);
+            }
+
+            .zoom-label {
+                color: white;
+                font-size: 12px;
+                font-weight: 500;
+                min-width: 30px;
+                text-align: center;
+                font-family: 'Bitcount Mono Light', monospace;
             }
 
             /* Disable hover effects on touch devices */
@@ -869,10 +946,14 @@
             </div>
         </div>
         
-        <!-- Mobile Zoom Controls -->
-        <div class="mobile-zoom-controls">
-            <button class="zoom-btn" id="zoom-out">−</button>
-            <button class="zoom-btn" id="zoom-in">+</button>
+        <!-- Mobile Zoom Slider -->
+        <div class="zoom-slider-container">
+            <span class="zoom-label">1×</span>
+            <div class="zoom-slider" id="zoom-slider">
+                <div class="zoom-slider-track" id="zoom-track"></div>
+                <div class="zoom-slider-thumb" id="zoom-thumb"></div>
+            </div>
+            <span class="zoom-label">8×</span>
         </div>
     </div>
 
@@ -887,6 +968,14 @@
             <div class="modal-body">
                 <div id="modal-carousel"></div>
                 <div id="modal-description"></div>
+                
+                <!-- Carousel Progress Bar (Mobile Only) -->
+                <div class="carousel-progress-container">
+                    <div class="carousel-progress-bar" id="carousel-progress-bar">
+                        <div class="carousel-progress-track" id="carousel-progress-track"></div>
+                        <div class="carousel-progress-thumb" id="carousel-progress-thumb"></div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -1328,6 +1417,11 @@
             
             // Set up infinite scroll
             setupInfiniteScroll(carousel, project.images.length);
+            
+            // Set up carousel progress bar for mobile
+            if (isMobile) {
+                setupCarouselProgress(carousel, project.images.length);
+            }
         }
 
         function closeModal() {
@@ -1800,26 +1894,149 @@
             hapticFeedback('light');
         });
 
-        // Mobile zoom controls
+        // Mobile zoom slider
+        let zoomSliderDragging = false;
+        
+        function updateZoomSlider() {
+            const track = document.getElementById('zoom-track');
+            const thumb = document.getElementById('zoom-thumb');
+            if (track && thumb) {
+                const percentage = ((scale - minScale) / (maxScale - minScale)) * 100;
+                track.style.width = percentage + '%';
+                thumb.style.right = (100 - percentage) + '%';
+            }
+        }
+
         if (isMobile) {
-            const zoomInBtn = document.getElementById('zoom-in');
-            const zoomOutBtn = document.getElementById('zoom-out');
+            const zoomSlider = document.getElementById('zoom-slider');
+            const zoomThumb = document.getElementById('zoom-thumb');
 
-            zoomInBtn.addEventListener('click', () => {
-                scale = Math.min(maxScale, scale + 0.1);
+            function handleZoomSliderMove(clientX) {
+                const rect = zoomSlider.getBoundingClientRect();
+                const percentage = Math.max(0, Math.min(1, (clientX - rect.left) / rect.width));
+                scale = minScale + (maxScale - minScale) * percentage;
                 updateZoom();
-                hapticFeedback('light');
+                updateZoomSlider();
+                hapticFeedback('selection');
+            }
+
+            // Mouse events for zoom slider
+            zoomSlider.addEventListener('click', (e) => {
+                if (!zoomSliderDragging) {
+                    handleZoomSliderMove(e.clientX);
+                }
             });
 
-            zoomOutBtn.addEventListener('click', () => {
-                scale = Math.max(minScale, scale - 0.1);
-                updateZoom();
-                hapticFeedback('light');
+            zoomThumb.addEventListener('mousedown', (e) => {
+                e.preventDefault();
+                zoomSliderDragging = true;
             });
+
+            // Touch events for zoom slider
+            zoomSlider.addEventListener('touchstart', (e) => {
+                handleZoomSliderMove(e.touches[0].clientX);
+                zoomSliderDragging = true;
+            });
+
+            document.addEventListener('mousemove', (e) => {
+                if (zoomSliderDragging) {
+                    handleZoomSliderMove(e.clientX);
+                }
+            });
+
+            document.addEventListener('touchmove', (e) => {
+                if (zoomSliderDragging) {
+                    handleZoomSliderMove(e.touches[0].clientX);
+                }
+            });
+
+            document.addEventListener('mouseup', () => {
+                zoomSliderDragging = false;
+            });
+
+            document.addEventListener('touchend', () => {
+                zoomSliderDragging = false;
+            });
+
+            // Hide carousel progress on desktop
+            updateZoomSlider();
         } else {
             // Hide zoom controls on desktop
-            const zoomControls = document.querySelector('.mobile-zoom-controls');
+            const zoomControls = document.querySelector('.zoom-slider-container');
             if (zoomControls) zoomControls.style.display = 'none';
+            
+            const carouselProgress = document.querySelector('.carousel-progress-container');
+            if (carouselProgress) carouselProgress.style.display = 'none';
+        }
+
+        // Carousel progress bar functionality
+        let carouselProgressDragging = false;
+        
+        function setupCarouselProgress(carousel, totalImages) {
+            const progressBar = document.getElementById('carousel-progress-bar');
+            const progressTrack = document.getElementById('carousel-progress-track');
+            const progressThumb = document.getElementById('carousel-progress-thumb');
+            
+            function updateCarouselProgress() {
+                const scrollLeft = carousel.scrollLeft;
+                const maxScroll = carousel.scrollWidth - carousel.clientWidth;
+                const percentage = (scrollLeft / maxScroll) * 100;
+                
+                progressTrack.style.width = percentage + '%';
+                progressThumb.style.left = percentage + '%';
+            }
+            
+            function handleCarouselProgressMove(clientX) {
+                const rect = progressBar.getBoundingClientRect();
+                const percentage = Math.max(0, Math.min(1, (clientX - rect.left) / rect.width));
+                const maxScroll = carousel.scrollWidth - carousel.clientWidth;
+                carousel.scrollLeft = maxScroll * percentage;
+                hapticFeedback('selection');
+            }
+            
+            // Update progress on scroll
+            carousel.addEventListener('scroll', updateCarouselProgress);
+            
+            // Click to jump
+            progressBar.addEventListener('click', (e) => {
+                if (!carouselProgressDragging) {
+                    handleCarouselProgressMove(e.clientX);
+                }
+            });
+            
+            // Touch events
+            progressBar.addEventListener('touchstart', (e) => {
+                handleCarouselProgressMove(e.touches[0].clientX);
+                carouselProgressDragging = true;
+            });
+            
+            progressThumb.addEventListener('mousedown', (e) => {
+                e.preventDefault();
+                carouselProgressDragging = true;
+            });
+            
+            document.addEventListener('mousemove', (e) => {
+                if (carouselProgressDragging) {
+                    handleCarouselProgressMove(e.clientX);
+                }
+            });
+            
+            document.addEventListener('touchmove', (e) => {
+                if (carouselProgressDragging) {
+                    handleCarouselProgressMove(e.touches[0].clientX);
+                }
+            });
+            
+            document.addEventListener('mouseup', () => {
+                carouselProgressDragging = false;
+            });
+            
+            document.addEventListener('touchend', () => {
+                carouselProgressDragging = false;
+            });
+            
+            // Initial update
+            updateCarouselProgress();
         }
 
         // Initialize
