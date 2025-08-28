@@ -526,33 +526,54 @@
 
         /* Mobile Responsive Styles */
         @media (max-width: 768px) {
-            /* Header adjustments */
+            /* Header adjustments - make it much more compact */
             .site-header {
-                padding: 15px 20px;
-                flex-direction: column;
-                gap: 15px;
+                padding: 8px 15px;
+                flex-direction: row;
+                gap: 10px;
                 align-items: center;
-                text-align: center;
+                justify-content: space-between;
+                min-height: 50px;
+                z-index: 1001;
+            }
+
+            .header-left {
+                flex: 0 0 auto;
             }
 
             .header-left h1 {
-                font-size: 2rem;
+                font-size: 1.2rem;
+                margin: 0;
+                line-height: 1;
             }
 
             .header-tagline {
-                font-size: 0.65rem;
-                max-width: 250px;
+                font-size: 0.5rem;
+                max-width: 120px;
+                line-height: 1.2;
+                margin-top: 2px;
             }
 
-            /* Clock scaling for mobile */
+            .header-right {
+                flex: 0 0 auto;
+            }
+
+            .contact-trigger {
+                font-size: 0.7rem;
+                padding: 4px 8px;
+            }
+
+            /* Clock scaling for mobile - much smaller */
             #clock625 {
-                transform: scale(0.4);
-                margin: 20px auto;
+                transform: scale(0.25);
+                margin: 10px auto;
+                margin-top: 60px; /* Account for header */
             }
 
-            /* Toggle container */
+            /* Toggle container - position below header */
             #toggle-container {
-                top: 10px;
+                top: 60px;
+                z-index: 1002;
             }
 
             /* Project list adjustments */
@@ -625,15 +646,28 @@
 
             /* Contact form mobile */
             .contact-form {
-                width: 280px;
-                padding: 15px;
-                right: 10px;
+                width: 250px;
+                padding: 10px;
+                right: 5px;
+                top: 100%;
+                font-size: 0.7rem;
+            }
+
+            .contact-form h3 {
+                font-size: 0.7rem;
+                margin-bottom: 8px;
             }
 
             .contact-form input,
             .contact-form textarea {
-                font-size: 14px;
-                padding: 8px;
+                font-size: 12px;
+                padding: 6px;
+                margin-bottom: 6px;
+            }
+
+            .contact-form button {
+                font-size: 11px;
+                padding: 6px 12px;
             }
 
             /* Touch improvements */
@@ -661,20 +695,31 @@
         @media (max-width: 480px) {
             /* Extra small devices */
             .site-header {
-                padding: 10px 15px;
+                padding: 6px 10px;
+                min-height: 45px;
             }
 
             .header-left h1 {
-                font-size: 1.5rem;
+                font-size: 1rem;
             }
 
             .header-tagline {
+                font-size: 0.45rem;
+                max-width: 100px;
+            }
+
+            .contact-trigger {
                 font-size: 0.6rem;
-                max-width: 200px;
+                padding: 3px 6px;
             }
 
             #clock625 {
-                transform: scale(0.3);
+                transform: scale(0.2);
+                margin-top: 50px;
+            }
+
+            #toggle-container {
+                top: 50px;
             }
 
             #project-list-content {
@@ -699,16 +744,51 @@
             }
 
             .contact-form {
-                width: 260px;
-                right: 5px;
+                width: 220px;
+                right: 3px;
+                padding: 8px;
+            }
+
+            .contact-form h3 {
+                font-size: 0.65rem;
+            }
+
+            .contact-form input,
+            .contact-form textarea {
+                font-size: 11px;
+                padding: 5px;
+            }
+
+            .contact-form button {
+                font-size: 10px;
+                padding: 5px 10px;
             }
         }
 
         /* Landscape mobile adjustments */
         @media (max-width: 768px) and (orientation: landscape) {
+            .site-header {
+                padding: 5px 10px;
+                min-height: 40px;
+            }
+
+            .header-left h1 {
+                font-size: 0.9rem;
+            }
+
+            .header-tagline {
+                font-size: 0.4rem;
+                max-width: 80px;
+            }
+
             #clock625 {
-                transform: scale(0.5);
-                margin: 10px auto;
+                transform: scale(0.3);
+                margin: 5px auto;
+                margin-top: 45px;
+            }
+
+            #toggle-container {
+                top: 45px;
             }
 
             #modal-carousel {
