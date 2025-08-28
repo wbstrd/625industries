@@ -981,13 +981,13 @@
     </div>
 
     <script>
-        // Detect mobile device first
-        const isMobile = window.matchMedia('(max-width: 768px)').matches;
-        
         const WIDTH = 25, HEIGHT = 35, DIGIT_SPACING = 3, NUM_IMAGES = 380;
         const BASE_PATH = "https://raw.githubusercontent.com/wbstrd/625industries/main/images/";
 
-                const poolPaths = {
+        // Detect mobile device first, before creating any images
+        const isMobile = window.matchMedia('(max-width: 768px)').matches;
+
+        const poolPaths = {
             tiny: "tiny_res",
             mobile: "mobile_res",
             low: "low_res",
