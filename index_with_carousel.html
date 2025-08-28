@@ -1941,9 +1941,7 @@
             hapticFeedback('light');
         });
 
-        // Mobile zoom slider with performance optimization
-        let zoomSliderDragging = false;
-        let zoomUpdatePending = false;
+        // Mobile zoom slider - now using ultra-smooth class-based implementation
         
         function updateZoomSlider() {
             const track = document.getElementById('zoom-track');
@@ -1967,58 +1965,108 @@
         }
 
         if (isMobile) {
-            const zoomSlider = document.getElementById('zoom-slider');
-            const zoomThumb = document.getElementById('zoom-thumb');
-
-            function handleZoomSliderMove(clientX) {
-                const rect = zoomSlider.getBoundingClientRect();
-                const percentage = Math.max(0, Math.min(1, (clientX - rect.left) / rect.width));
-                scale = minScale + (maxScale - minScale) * percentage;
+            // Ultra-smooth mobile zoom slider implementation
+            class SmoothZoomSlider {
+                constructor() {
+                    this.container = document.getElementById('zoom-slider');
+                    this.track = document.getElementById('zoom-track');
+                    this.thumb = document.getElementById('zoom-thumb');
+                    this.isDragging = false;
+                    this.animationId = null;
+                    this.pendingUpdate = false;
+                    
+                    this.init();
+                }
                 
-                // Throttled updates for smooth performance
-                throttledZoomUpdate();
+                init() {
+                    if (!this.container || !this.track || !this.thumb) return;
+                    
+                    // High-performance touch events
+                    this.container.addEventListener('touchstart', this.onTouchStart.bind(this), { 
+                        passive: false, 
+                        capture: true 
+                    });
+                    
+                    this.container.addEventListener('touchmove', this.onTouchMove.bind(this), { 
+                        passive: false 
+                    });
+                    
+                    this.container.addEventListener('touchend', this.onTouchEnd.bind(this), { 
+                        passive: true 
+                    });
+                    
+                    // Click support for testing
+                    this.container.addEventListener('click', this.onClick.bind(this));
+                    
+                    // Initial position
+                    this.updateSliderPosition();
+                }
+                
+                onTouchStart(e) {
+                    e.preventDefault();
+                    this.isDragging = true;
+                    this.updateFromTouch(e.touches[0]);
+                }
+                
+                onTouchMove(e) {
+                    if (!this.isDragging) return;
+                    e.preventDefault();
+                    this.updateFromTouch(e.touches[0]);
+                }
+                
+                onTouchEnd(e) {
+                    this.isDragging = false;
+                }
+                
+                onClick(e) {
+                    if (!this.isDragging) {
+                        this.updateFromTouch(e);
+                    }
+                }
+                
+                updateFromTouch(touch) {
+                    const rect = this.container.getBoundingClientRect();
+                    const percentage = Math.max(0, Math.min(1, (touch.clientX - rect.left) / rect.width));
+                    const newScale = minScale + (maxScale - minScale) * percentage;
+                    
+                    // Only update if there's a meaningful change (reduces CPU usage)
+                    if (Math.abs(newScale - scale) > 0.005) {
+                        scale = newScale;
+                        this.scheduleUpdate();
+                    }
+                }
+                
+                scheduleUpdate() {
+                    if (this.pendingUpdate) return;
+                    
+                    this.pendingUpdate = true;
+                    this.animationId = requestAnimationFrame(() => {
+                        this.performUpdate();
+                        this.pendingUpdate = false;
+                    });
+                }
+                
+                performUpdate() {
+                    // Batch DOM updates for maximum performance
+                    updateZoom();
+                    this.updateSliderPosition();
+                }
+                
+                updateSliderPosition() {
+                    const percentage = ((scale - minScale) / (maxScale - minScale)) * 100;
+                    
+                    // Use transforms for hardware acceleration (60fps smooth)
+                    this.track.style.transform = `scaleX(${percentage / 100})`;
+                    this.track.style.transformOrigin = 'left center';
+                    this.thumb.style.transform = `translateX(${percentage}%)`;
+                }
             }
-
-            // Mouse events for zoom slider
-            zoomSlider.addEventListener('click', (e) => {
-                if (!zoomSliderDragging) {
-                    handleZoomSliderMove(e.clientX);
-                }
-            });
-
-            zoomThumb.addEventListener('mousedown', (e) => {
-                e.preventDefault();
-                zoomSliderDragging = true;
-            });
-
-            // Touch events for zoom slider
-            zoomSlider.addEventListener('touchstart', (e) => {
-                handleZoomSliderMove(e.touches[0].clientX);
-                zoomSliderDragging = true;
-            }, { passive: true });
-
-            document.addEventListener('mousemove', (e) => {
-                if (zoomSliderDragging) {
-                    handleZoomSliderMove(e.clientX);
-                }
-            });
-
-            document.addEventListener('touchmove', (e) => {
-                if (zoomSliderDragging) {
-                    handleZoomSliderMove(e.touches[0].clientX);
-                }
-            }, { passive: true });
-
-            document.addEventListener('mouseup', () => {
-                zoomSliderDragging = false;
-            });
-
-            document.addEventListener('touchend', () => {
-                zoomSliderDragging = false;
-            });
-
-            // Hide carousel progress on desktop
-            updateZoomSlider();
+            
+            // Initialize the ultra-smooth slider
+            const smoothSlider = new SmoothZoomSlider();
+            
+            // Override global update function
+            updateZoomSlider = () => smoothSlider.updateSliderPosition();
         } else {
             // Hide zoom controls on desktop
             const zoomControls = document.querySelector('.zoom-slider-container');
