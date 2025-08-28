@@ -981,6 +981,9 @@
     </div>
 
     <script>
+        // Detect mobile device first
+        const isMobile = window.matchMedia('(max-width: 768px)').matches;
+        
         const WIDTH = 25, HEIGHT = 35, DIGIT_SPACING = 3, NUM_IMAGES = 380;
         const BASE_PATH = "https://raw.githubusercontent.com/wbstrd/625industries/main/images/";
 
@@ -1321,6 +1324,7 @@
                 if (cell === 1) {
                     const img = document.createElement("img");
                     const src = isMobile ? pools.tiny[index] : pools.low[index];
+                    console.log('Creating image:', { index, isMobile, src });
                     img.src = src;
                     img.dataset.src = src;
                     img.dataset.tiny = pools.tiny[index];
@@ -1573,18 +1577,16 @@
             updateZoom();
         }, { passive: false });
 
-        // Detect mobile device
-        const isMobile = window.matchMedia('(max-width: 768px)').matches;
-        
         let scale = isMobile ? 0.3 : 1; // Start smaller on mobile
         const minScale = isMobile ? 0.1 : 0.5; // Allow much smaller zoom on mobile
         const maxScale = isMobile ? 8 : 15; // Reduced max zoom on mobile
-        let currentRes = "low";
+        let currentRes = isMobile ? "tiny" : "low";
 
         function updateZoom() {
             holder.style.transform = `scale(${scale})`;
 
             let newRes = isMobile ? "tiny" : "low";
+            console.log('updateZoom:', { isMobile, scale, newRes, currentRes });
             
             if (isMobile) {
                 // Mobile: Progressive small resolutions for smooth zoom
