@@ -1256,6 +1256,10 @@
             });
         }
 
+        function blankDigit() {
+            return Array.from({ length: HEIGHT }, () => Array(WIDTH).fill(0));
+        }
+
         function buildDigit(segments) {
             const digit = blankDigit();
             const h = horizontalPill();
