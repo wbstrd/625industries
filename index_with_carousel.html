@@ -565,7 +565,7 @@
 
             /* Clock scaling for mobile - much smaller */
             #clock625 {
-                transform: scale(0.25);
+                transform: scale(0.15);
                 margin: 10px auto;
                 margin-top: 60px; /* Account for header */
             }
@@ -682,6 +682,37 @@
                 justify-content: center;
             }
 
+            /* Mobile zoom controls */
+            .mobile-zoom-controls {
+                position: fixed;
+                bottom: 20px;
+                left: 20px;
+                display: flex;
+                gap: 10px;
+                z-index: 1001;
+            }
+
+            .zoom-btn {
+                width: 40px;
+                height: 40px;
+                background: rgba(255, 255, 255, 0.9);
+                border: none;
+                border-radius: 50%;
+                font-size: 18px;
+                font-weight: bold;
+                color: black;
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+            }
+
+            .zoom-btn:active {
+                transform: scale(0.95);
+                background: rgba(255, 255, 255, 0.7);
+            }
+
             /* Disable hover effects on touch devices */
             .tile:hover img {
                 transform: none;
@@ -714,7 +745,7 @@
             }
 
             #clock625 {
-                transform: scale(0.2);
+                transform: scale(0.12);
                 margin-top: 50px;
             }
 
@@ -782,7 +813,7 @@
             }
 
             #clock625 {
-                transform: scale(0.3);
+                transform: scale(0.18);
                 margin: 5px auto;
                 margin-top: 45px;
             }
@@ -836,6 +867,12 @@
                 <h2>INDEX</h2>
                 <div id="projects-container"></div>
             </div>
+        </div>
+        
+        <!-- Mobile Zoom Controls -->
+        <div class="mobile-zoom-controls">
+            <button class="zoom-btn" id="zoom-out">−</button>
+            <button class="zoom-btn" id="zoom-in">+</button>
         </div>
     </div>
 
@@ -1424,9 +1461,12 @@
             updateZoom();
         }, { passive: false });
 
-        let scale = 1;
-        const minScale = 0.5;
-        const maxScale = 15;
+        // Detect mobile device
+        const isMobile = window.matchMedia('(max-width: 768px)').matches;
+        
+        let scale = isMobile ? 0.3 : 1; // Start smaller on mobile
+        const minScale = isMobile ? 0.1 : 0.5; // Allow much smaller zoom on mobile
+        const maxScale = isMobile ? 8 : 15; // Reduced max zoom on mobile
         let currentRes = "low";
 
         function updateZoom() {
@@ -1717,7 +1757,7 @@
                 // Double tap detected - haptic success feedback
                 hapticFeedback('success');
                 
-                scale = 1;
+                scale = isMobile ? 0.3 : 1; // Reset to appropriate scale for device
                 offsetX = 0;
                 offsetY = 0;
                 holder.style.left = "50%";
@@ -1759,6 +1799,28 @@
         contactTrigger.addEventListener('touchstart', () => {
             hapticFeedback('light');
         });
+
+        // Mobile zoom controls
+        if (isMobile) {
+            const zoomInBtn = document.getElementById('zoom-in');
+            const zoomOutBtn = document.getElementById('zoom-out');
+
+            zoomInBtn.addEventListener('click', () => {
+                scale = Math.min(maxScale, scale + 0.1);
+                updateZoom();
+                hapticFeedback('light');
+            });
+
+            zoomOutBtn.addEventListener('click', () => {
+                scale = Math.max(minScale, scale - 0.1);
+                updateZoom();
+                hapticFeedback('light');
+            });
+        } else {
+            // Hide zoom controls on desktop
+            const zoomControls = document.querySelector('.mobile-zoom-controls');
+            if (zoomControls) zoomControls.style.display = 'none';
+        }
 
         // Initialize
         populateProjectList();
