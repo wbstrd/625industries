@@ -1203,9 +1203,14 @@
         });
 
         function getPhotos(res, suffix = "") {
-            return Array.from({ length: NUM_IMAGES }, (_, i) =>
-                `${BASE_PATH}${poolPaths[res]}/img${String(i + 1).padStart(3, '0')}${suffix}.jpg`
-            );
+            return Array.from({ length: NUM_IMAGES }, (_, i) => {
+                const imgNum = String(i + 1).padStart(3, '0');
+                // Handle special cases for .jpeg extensions (img237, img239)
+                if (imgNum === '237' || imgNum === '239') {
+                    return `${BASE_PATH}${poolPaths[res]}/img${imgNum}${suffix}.jpeg`;
+                }
+                return `${BASE_PATH}${poolPaths[res]}/img${imgNum}${suffix}.jpg`;
+            });
         }
 
         function horizontalPill(width = 21, height = 4) {
@@ -1324,7 +1329,6 @@
                 if (cell === 1) {
                     const img = document.createElement("img");
                     const src = isMobile ? pools.tiny[index] : pools.low[index];
-                    console.log('Creating image:', { index, isMobile, src });
                     img.src = src;
                     img.dataset.src = src;
                     img.dataset.tiny = pools.tiny[index];
@@ -1586,7 +1590,6 @@
             holder.style.transform = `scale(${scale})`;
 
             let newRes = isMobile ? "tiny" : "low";
-            console.log('updateZoom:', { isMobile, scale, newRes, currentRes });
             
             if (isMobile) {
                 // Mobile: Progressive small resolutions for smooth zoom
