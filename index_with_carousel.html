@@ -985,6 +985,11 @@
         const BASE_PATH = "https://raw.githubusercontent.com/wbstrd/625industries/main/images/";
 
         const poolPaths = {
+            micro: "micro_res",
+            tiny: "tiny_res",
+            mini: "mini_res",
+            nano: "nano_res",
+            micro2: "micro2_res",
             low: "low_res",
             small: "small_res",
             medium: "medium_res",
@@ -1301,6 +1306,11 @@
         }
 
         const pools = {
+            micro: fillPool(getPhotos("micro", "-micro")),
+            tiny: fillPool(getPhotos("tiny", "-tiny")),
+            mini: fillPool(getPhotos("mini", "-mini")),
+            nano: fillPool(getPhotos("nano", "-nano")),
+            micro2: fillPool(getPhotos("micro2", "-micro2")),
             low: fillPool(getPhotos("low", "-low")),
             small: fillPool(getPhotos("small", "-small")),
             medium: fillPool(getPhotos("medium", "-med")),
@@ -1320,9 +1330,17 @@
                 div.dataset.y = y;
                 if (cell === 1) {
                     const img = document.createElement("img");
-                    const src = pools.low[index];
+                    // Use micro resolution for mobile, low for desktop
+                    const src = isMobile ? pools.micro[index] : pools.low[index];
                     img.src = src;
                     img.dataset.src = src;
+                    // Add all mobile tiny resolutions
+                    img.dataset.micro = pools.micro[index];
+                    img.dataset.tiny = pools.tiny[index];
+                    img.dataset.mini = pools.mini[index];
+                    img.dataset.nano = pools.nano[index];
+                    img.dataset.micro2 = pools.micro2[index];
+                    // Add desktop resolutions
                     img.dataset.low = pools.low[index];
                     img.dataset.small = pools.small[index];
                     img.dataset.medium = pools.medium[index];
@@ -1577,18 +1595,19 @@
         let scale = isMobile ? 0.3 : 1; // Start smaller on mobile
         const minScale = isMobile ? 0.1 : 0.5; // Allow much smaller zoom on mobile
         const maxScale = isMobile ? 8 : 15; // Reduced max zoom on mobile
-        let currentRes = "low";
+        let currentRes = isMobile ? "micro" : "low";
 
         function updateZoom() {
             holder.style.transform = `scale(${scale})`;
 
-            let newRes = "low";
+            let newRes = isMobile ? "micro" : "low";
             
             if (isMobile) {
-                // Use lower resolutions on mobile for better performance
-                if (scale >= 1.5) newRes = "small";
-                if (scale >= 3.0) newRes = "medium";
-                // Cap at medium resolution on mobile to prevent lag
+                // Mobile: 5 progressive tiny resolutions for ultra-smooth zoom
+                if (scale >= 0.5) newRes = "tiny";    // 60x60px
+                if (scale >= 1.0) newRes = "mini";    // 80x80px  
+                if (scale >= 2.0) newRes = "nano";    // 100x100px
+                if (scale >= 4.0) newRes = "micro2";  // 120x120px - max mobile
             } else {
                 // Desktop resolution progression
                 if (scale >= 1.3) newRes = "small";
