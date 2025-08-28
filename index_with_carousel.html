@@ -1592,9 +1592,6 @@
             updateZoom();
         }, { passive: false });
 
-        // Detect mobile device
-        const isMobile = window.matchMedia('(max-width: 768px)').matches;
-        
         let scale = isMobile ? 0.3 : 1; // Start smaller on mobile
         const minScale = isMobile ? 0.1 : 0.5; // Allow much smaller zoom on mobile
         const maxScale = isMobile ? 8 : 15; // Reduced max zoom on mobile
