@@ -9,7 +9,7 @@
         
         @font-face {
             font-family: 'Bitcount Mono Light';
-            src: url('https://raw.githubusercontent.com/wbstrd/625industries/main/Fonts/BitcountGridSingle-LightCircle.otf') format('opentype');
+            src: url('./Fonts/BitcountGridSingle-LightCircle.otf') format('opentype');
             font-weight: 300;
             font-style: normal;
             font-display: swap;
@@ -308,19 +308,19 @@
             align-items: center;
         }
 
-        #modal-carousel {
+        
             width: 100%;
-            height: 60%;
+            height: 600px;
             overflow-x: auto;
             overflow-y: hidden;
-            white-space: nowrap;
+            display: flex;
             scroll-behavior: smooth;
-            /* Hide scrollbar */
             scrollbar-width: none;
             -ms-overflow-style: none;
-            display: flex;
-            align-items: center;
-        }
+            position: relative;
+            border-radius: 12px;
+            background: #111;
+        
 
         #modal-description {
             position: absolute;
@@ -371,7 +371,7 @@
 
     <script>
         const WIDTH = 25, HEIGHT = 35, DIGIT_SPACING = 3, NUM_IMAGES = 150;
-        const BASE_PATH = "images/";
+        const BASE_PATH = "./images/";
 
         const poolPaths = {
             low: "low_res",
@@ -383,27 +383,58 @@
 
         // Project data with image mappings
         const projects = {
-  "2017": [
-    {
-      "title": "LA ALL STAR",
-      "date": "2017.02.18",
-      "location": "LOS ANGELES",
-      "description": "NBA All-Star Weekend activation in Los Angeles.",
-      "images": [
-        91,
-        92,
-        93,
-        94,
-        95
-      ]
-    }
-  ],
   "2018": [
     {
+      "title": "AIR MAX DAY",
+      "date": "2018.03.26",
+      "location": "BROOKLYN",
+      "description": "Nike Air Max Day event in Brooklyn.",
+      "images": [
+        100,
+        101,
+        102
+      ]
+    },
+    {
+      "title": "KYRIE SNEAKER CUSTOMIZATION",
+      "date": "2018.09.28",
+      "location": "BROOKLYN",
+      "description": "Nike Kyrie Sneaker Customization event in Brooklyn.",
+      "images": [
+        105,
+        106,
+        107
+      ]
+    },
+    {
       "title": "MAKERS STUDIO",
-      "date": "2018.10.01",
+      "date": "2018.10.18",
       "location": "LOS ANGELES",
-      "description": "Nike Makers Studio October session in Los Angeles.",
+      "description": "Nike Makers Studio event in Los Angeles.",
+      "images": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "title": "SOCIAL STUDIES",
+      "date": "2018.11.16",
+      "location": "NEW YORK",
+      "description": "Nike Social Studies event in New York.",
+      "images": [
+        110,
+        111,
+        112
+      ]
+    },
+    {
+      "title": "MAKERS STUDIO",
+      "date": "2018.12.01",
+      "location": "ROOSEVELT FIELD MALL",
+      "description": "Nike Makers Studio event in Roosevelt Field Mall.",
       "images": [
         6,
         7,
@@ -413,25 +444,215 @@
       ]
     },
     {
-      "title": "MAKERS STUDIO",
-      "date": "2018.12.01",
-      "location": "LOS ANGELES",
-      "description": "Nike Makers Studio creative workshop in Los Angeles.",
+      "title": "GIFTING SUITE",
+      "date": "2018.12.06",
+      "location": "MIAMI",
+      "description": "Nike Gifting Suite event in Miami.",
       "images": [
-        1,
-        2,
-        3,
-        4,
-        5
+        115,
+        116,
+        117
+      ]
+    },
+    {
+      "title": "MAKERS STUDIO",
+      "date": "2018.12.12",
+      "location": "LOS ANGELES",
+      "description": "Nike Makers Studio event in Los Angeles.",
+      "images": [
+        120,
+        121,
+        122
+      ]
+    },
+    {
+      "title": "MAKERS STUDIO",
+      "date": "2018.12.16",
+      "location": "LOS ANGELES",
+      "description": "Nike Makers Studio event in Los Angeles.",
+      "images": [
+        125,
+        126,
+        127
+      ]
+    }
+  ],
+  "2019": [
+    {
+      "title": "ALL-STAR WEEKEND",
+      "date": "2019.02.15",
+      "location": "CHARLOTTE",
+      "description": "Nike All-Star Weekend event in Charlotte.",
+      "images": [
+        130,
+        131,
+        132
+      ]
+    },
+    {
+      "title": "AIR MAX WEEK",
+      "date": "2019.03.22",
+      "location": "NEW YORK",
+      "description": "Nike Air Max Week event in New York.",
+      "images": [
+        135,
+        136,
+        137
+      ]
+    },
+    {
+      "title": "CUSTOM POLO (SNKRS)",
+      "date": "2019.07.31",
+      "location": "NYC",
+      "description": "Nike Custom Polo (SNKRS) event in NYC.",
+      "images": [
+        140,
+        141,
+        142
+      ]
+    },
+    {
+      "title": "LEVI\u2019S \u00d7 CENTURY 21",
+      "date": "2019.10.03",
+      "location": "NYC",
+      "description": "Levi\u2019s Levi\u2019s \u00d7 Century 21 event in NYC.",
+      "images": [
+        145,
+        146,
+        147
+      ]
+    },
+    {
+      "title": "LEVI\u2019S HAUS",
+      "date": "2019.12.04",
+      "location": "MIAMI",
+      "description": "Levi\u2019s Levi\u2019s Haus event in Miami.",
+      "images": [
+        150,
+        151,
+        152
+      ]
+    }
+  ],
+  "2020": [],
+  "COVID": [
+    {
+      "title": "VERDY \u00d7 LEVI\u2019S HAUS",
+      "date": "2020.01.24",
+      "location": "MIAMI",
+      "description": "Verdy Verdy \u00d7 Levi\u2019s Haus event in Miami.",
+      "images": [
+        155,
+        156,
+        157
+      ]
+    },
+    {
+      "title": "SUPER BOWL LIV",
+      "date": "2020.01.26",
+      "location": "MIAMI",
+      "description": "Nike Super Bowl LIV event in Miami.",
+      "images": [
+        160,
+        161,
+        162
+      ]
+    },
+    {
+      "title": "LEVI\u2019S \u00d7 BAPE",
+      "date": "2020.03.05",
+      "location": "MIAMI",
+      "description": "Levi\u2019s Levi\u2019s \u00d7 BAPE event in Miami.",
+      "images": [
+        165,
+        166,
+        167
+      ]
+    },
+    {
+      "title": "NIKEBYYOU",
+      "date": "2021.07.22",
+      "location": "CHICAGO",
+      "description": "Nike NikeByYou event in Chicago.",
+      "images": [
+        170,
+        171,
+        172
+      ]
+    },
+    {
+      "title": "BACK2SCHOOL PHOTOSHOOT",
+      "date": "2021.08.16",
+      "location": "NYC",
+      "description": "Nike Back2School Photoshoot event in NYC.",
+      "images": [
+        175,
+        176,
+        177
+      ]
+    },
+    {
+      "title": "CONGA / SALESFORCE AF1 CUSTOM",
+      "date": "2021.10.26",
+      "location": "NYC",
+      "description": "Nike Conga / Salesforce AF1 Custom event in NYC.",
+      "images": [
+        180,
+        181,
+        182
+      ]
+    },
+    {
+      "title": "ASTROWORLD \u00d7 LEVI\u2019S",
+      "date": "2021.11.05",
+      "location": "HOUSTON",
+      "description": "AstroWorld AstroWorld \u00d7 Levi\u2019s event in Houston.",
+      "images": [
+        185,
+        186,
+        187
+      ]
+    },
+    {
+      "title": "ROOKIE OF THE YEAR CUSTOM",
+      "date": "2021.11.16",
+      "location": "NYC",
+      "description": "Nike Rookie of the Year Custom event in NYC.",
+      "images": [
+        190,
+        191,
+        192
+      ]
+    },
+    {
+      "title": "ART BASEL \u00d7 CHASE PRIVATE CLIENT",
+      "date": "2021.12.02",
+      "location": "MIAMI",
+      "description": "Art Basel Art Basel \u00d7 Chase Private Client event in Miami.",
+      "images": [
+        195,
+        196,
+        197
+      ]
+    },
+    {
+      "title": "ART BASEL \u00d7 META",
+      "date": "2021.12.02",
+      "location": "MIAMI",
+      "description": "Art Basel Art Basel \u00d7 META event in Miami.",
+      "images": [
+        200,
+        201,
+        202
       ]
     }
   ],
   "2022": [
     {
-      "title": "LEVI'S HOUSE \u00d7 DAISY WORLD",
-      "date": "2022.02.01",
+      "title": "NIKEBYYOU \u2013 SUPER BOWL LVI",
+      "date": "2022.02.03",
       "location": "LOS ANGELES",
-      "description": "Levi's House \u00d7 Daisy World activation in Los Angeles.",
+      "description": "Nike NikeByYou \u2013 Super Bowl LVI event in Los Angeles.",
       "images": [
         11,
         12,
@@ -441,10 +662,32 @@
       ]
     },
     {
-      "title": "BILLIE EILISH \u00d7 NIKE (UPCYCLE)",
-      "date": "2022.04.01",
+      "title": "SHE RUNS BOSTON (BRA CUSTOMIZATION)",
+      "date": "2022.03.23",
+      "location": "NYC",
+      "description": "Nike She Runs Boston (Bra Customization) event in NYC.",
+      "images": [
+        205,
+        206,
+        207
+      ]
+    },
+    {
+      "title": "SNKRS PHOTOSHOOT",
+      "date": "2022.03.31",
+      "location": "NYC",
+      "description": "Nike SNKRS Photoshoot event in NYC.",
+      "images": [
+        210,
+        211,
+        212
+      ]
+    },
+    {
+      "title": "LEVI\u2019S HOUSE \u00d7 DAISY WORLD",
+      "date": "2022.04.05",
       "location": "LOS ANGELES",
-      "description": "Billie Eilish Nike upcycle activation in Los Angeles.",
+      "description": "Levi\u2019s Levi\u2019s House \u00d7 Daisy World event in Los Angeles.",
       "images": [
         16,
         17,
@@ -454,23 +697,10 @@
       ]
     },
     {
-      "title": "NFL DRAFT DAY",
-      "date": "2022.04.28",
-      "location": "LAS VEGAS",
-      "description": "NFL Draft Day experience in Las Vegas.",
-      "images": [
-        26,
-        27,
-        28,
-        29,
-        30
-      ]
-    },
-    {
-      "title": "LEVI'S \u00d7 COME",
-      "date": "2022.06.01",
-      "location": "LOS ANGELES",
-      "description": "Levi's \u00d7 Come collaboration in Watts, Los Angeles.",
+      "title": "LEVI\u2019S \u00d7 COME",
+      "date": "2022.04.07",
+      "location": "WATTS",
+      "description": "Levi\u2019s Levi\u2019s \u00d7 COME event in Watts.",
       "images": [
         21,
         22,
@@ -480,10 +710,34 @@
       ]
     },
     {
-      "title": "MLB NIKEBYYOU",
-      "date": "2022.07.19",
+      "title": "LEVI\u2019S \u00d7 DAISY WORLD",
+      "date": "2022.04.09",
+      "location": "SANTA MONICA",
+      "description": "Levi\u2019s Levi\u2019s \u00d7 Daisy World event in Santa Monica.",
+      "images": [
+        215,
+        216,
+        217
+      ]
+    },
+    {
+      "title": "BILLIE EILISH \u00d7 NIKE (UPCYCLE)",
+      "date": "2022.04.19",
       "location": "LOS ANGELES",
-      "description": "MLB All-Star NikeByYou customization experience.",
+      "description": "Billie Eilish Billie Eilish \u00d7 Nike (Upcycle) event in Los Angeles.",
+      "images": [
+        26,
+        27,
+        28,
+        29,
+        30
+      ]
+    },
+    {
+      "title": "NFL DRAFT DAY",
+      "date": "2022.04.27",
+      "location": "LAS VEGAS",
+      "description": "Nike NFL Draft Day event in Las Vegas.",
       "images": [
         31,
         32,
@@ -491,14 +745,34 @@
         34,
         35
       ]
-    }
-  ],
-  "2023": [
+    },
     {
-      "title": "SUPER BOWL LVII \u00d7 UNDFTD",
-      "date": "2023.02.12",
-      "location": "PHOENIX",
-      "description": "Super Bowl LVII Undefeated activation in Phoenix.",
+      "title": "IN-STORE CUSTOMIZATION",
+      "date": "2022.05.19",
+      "location": "NYC",
+      "description": "Levi\u2019s In-Store Customization event in NYC.",
+      "images": [
+        220,
+        221,
+        222
+      ]
+    },
+    {
+      "title": "WNBA NIKEBYYOU",
+      "date": "2022.07.07",
+      "location": "CHICAGO",
+      "description": "Nike WNBA NikeByYou event in Chicago.",
+      "images": [
+        225,
+        226,
+        227
+      ]
+    },
+    {
+      "title": "MLB NIKEBYYOU",
+      "date": "2022.07.15",
+      "location": "LOS ANGELES",
+      "description": "Nike MLB NikeByYou event in Los Angeles.",
       "images": [
         36,
         37,
@@ -508,10 +782,10 @@
       ]
     },
     {
-      "title": "NIKEBYYOU \u2013 SUPER BOWL",
-      "date": "2023.02.12",
-      "location": "PHOENIX",
-      "description": "Super Bowl LVII NikeByYou experience in Phoenix.",
+      "title": "ROLLING LOUD \u00d7 LEVI\u2019S",
+      "date": "2022.07.21",
+      "location": "MIAMI",
+      "description": "Rolling Loud Rolling Loud \u00d7 Levi\u2019s event in Miami.",
       "images": [
         41,
         42,
@@ -521,10 +795,56 @@
       ]
     },
     {
-      "title": "ROLLING LOUD \u00d7 LEVI'S",
-      "date": "2023.03.03",
-      "location": "MIAMI",
-      "description": "Rolling Loud Miami Levi's activation.",
+      "title": "BEYOND THE COURT",
+      "date": "2022.09.08",
+      "location": "NYC",
+      "description": "Nike Beyond The Court event in NYC.",
+      "images": [
+        230,
+        231,
+        232
+      ]
+    },
+    {
+      "title": "KID CUDI \u00d7 LEVI\u2019S",
+      "date": "2022.09.17",
+      "location": "CLEVELAND",
+      "description": "Kid Cudi Kid Cudi \u00d7 Levi\u2019s event in Cleveland.",
+      "images": [
+        235,
+        236,
+        237
+      ]
+    },
+    {
+      "title": "AMAZON \u00d7 CULTURECON",
+      "date": "2022.10.08",
+      "location": "NYC",
+      "description": "Amazon Amazon \u00d7 CultureCon event in NYC.",
+      "images": [
+        240,
+        241,
+        242
+      ]
+    },
+    {
+      "title": "NIKEBYYOU \u2013 CHICAGO SCHOOL",
+      "date": "2022.11.04",
+      "location": "CHICAGO",
+      "description": "Nike NikeByYou \u2013 Chicago School event in Chicago.",
+      "images": [
+        245,
+        246,
+        247
+      ]
+    }
+  ],
+  "2023": [
+    {
+      "title": "SUPER BOWL LVII \u00d7 UNDFTD",
+      "date": "2023.02.07",
+      "location": "PHOENIX",
+      "description": "Nike Super Bowl LVII \u00d7 UNDFTD event in Phoenix.",
       "images": [
         46,
         47,
@@ -534,10 +854,10 @@
       ]
     },
     {
-      "title": "LEVI'S 501 DAY",
-      "date": "2023.05.20",
-      "location": "SAN FRANCISCO",
-      "description": "Levi's 501 Day celebration in San Francisco.",
+      "title": "NIKEBYYOU \u2013 SUPER BOWL",
+      "date": "2023.02.08",
+      "location": "PHOENIX",
+      "description": "Nike NikeByYou \u2013 Super Bowl event in Phoenix.",
       "images": [
         51,
         52,
@@ -547,10 +867,34 @@
       ]
     },
     {
-      "title": "NIKE TEA ROOM",
-      "date": "2023.07.15",
+      "title": "ROLLING LOUD \u00d7 LEVI\u2019S",
+      "date": "2023.03.04",
       "location": "LOS ANGELES",
-      "description": "Nike Tea Room experience in Los Angeles.",
+      "description": "Rolling Loud Rolling Loud \u00d7 Levi\u2019s event in Los Angeles.",
+      "images": [
+        56,
+        57,
+        58,
+        59,
+        60
+      ]
+    },
+    {
+      "title": "ROLLING LOUD \u00d7 LEVI\u2019S",
+      "date": "2023.04.11",
+      "location": "PATTAYA",
+      "description": "Rolling Loud Rolling Loud \u00d7 Levi\u2019s event in Pattaya.",
+      "images": [
+        250,
+        251,
+        252
+      ]
+    },
+    {
+      "title": "LEVI\u2019S 501 DAY",
+      "date": "2023.05.18",
+      "location": "SAN FRANCISCO",
+      "description": "Levi\u2019s Levi\u2019s 501 Day event in San Francisco.",
       "images": [
         61,
         62,
@@ -560,85 +904,369 @@
       ]
     },
     {
-      "title": "ROLLING LOUD \u00d7 LEVI'S",
+      "title": "ROLLING LOUD \u00d7 LEVI\u2019S",
+      "date": "2023.07.05",
+      "location": "PORTIM\u00c3O",
+      "description": "Rolling Loud Rolling Loud \u00d7 Levi\u2019s event in Portim\u00e3o.",
+      "images": [
+        66,
+        67,
+        68,
+        69
+      ]
+    },
+    {
+      "title": "ROLLING LOUD \u00d7 LEVI\u2019S",
+      "date": "2023.07.09",
+      "location": "MUNICH",
+      "description": "Rolling Loud Rolling Loud \u00d7 Levi\u2019s event in Munich.",
+      "images": [
+        255,
+        256,
+        257
+      ]
+    },
+    {
+      "title": "NIKE TEA ROOM",
+      "date": "2023.07.13",
+      "location": "LAS VEGAS",
+      "description": "Nike Nike Tea Room event in Las Vegas.",
+      "images": [
+        70,
+        71,
+        72,
+        73
+      ]
+    },
+    {
+      "title": "REMIX YOUR GAME",
+      "date": "2023.07.20",
+      "location": "BRONX",
+      "description": "Footlocker Remix Your Game event in Bronx.",
+      "images": [
+        260,
+        261,
+        262
+      ]
+    },
+    {
+      "title": "ROLLING LOUD \u00d7 LEVI\u2019S",
       "date": "2023.07.21",
       "location": "MIAMI",
-      "description": "Rolling Loud July Levi's collaboration.",
+      "description": "Rolling Loud Rolling Loud \u00d7 Levi\u2019s event in Miami.",
       "images": [
-        56,
-        57,
-        58,
-        59,
-        60
+        265,
+        266,
+        267
+      ]
+    },
+    {
+      "title": "NYVNY",
+      "date": "2023.08.05",
+      "location": "NYC",
+      "description": "Snipes NYvNY event in NYC.",
+      "images": [
+        270,
+        271,
+        272
+      ]
+    },
+    {
+      "title": "HIP HOP 50TH",
+      "date": "2023.08.11",
+      "location": "NYC",
+      "description": "Nike Hip Hop 50th event in NYC.",
+      "images": [
+        275,
+        276,
+        277
+      ]
+    },
+    {
+      "title": "YARDRUNNERS NIKEBYYOU",
+      "date": "2023.10.27",
+      "location": "NIKE SOHO",
+      "description": "Nike YardRunners NikeByYou event in Nike SOHO.",
+      "images": [
+        280,
+        281,
+        282
+      ]
+    },
+    {
+      "title": "BOROUGHS NIKEBYYOU",
+      "date": "2023.11.16",
+      "location": "NIKE HOI",
+      "description": "Nike Boroughs NikeByYou event in Nike HOI.",
+      "images": [
+        285,
+        286,
+        287
+      ]
+    },
+    {
+      "title": "TALENT NIKEBYYOU",
+      "date": "2023.11.27",
+      "location": "NIKE SOHO",
+      "description": "Nike Talent NikeByYou event in Nike SOHO.",
+      "images": [
+        290,
+        291,
+        292
+      ]
+    },
+    {
+      "title": "NIKEBYYOU",
+      "date": "2023.12.09",
+      "location": "NIKE SOHO",
+      "description": "Nike NikeByYou event in Nike SOHO.",
+      "images": [
+        295,
+        296,
+        297
       ]
     }
   ],
   "2024": [
     {
       "title": "SUPER BOWL LVIII NIKEBYYOU",
-      "date": "2024.02.11",
+      "date": "2024.02.06",
       "location": "LAS VEGAS",
-      "description": "Super Bowl LVIII NikeByYou activation in Las Vegas.",
+      "description": "Nike Super Bowl LVIII NikeByYou event in Las Vegas.",
       "images": [
-        66,
-        67,
-        68,
-        69,
-        70
+        74,
+        75,
+        76,
+        77,
+        78
       ]
     },
     {
       "title": "ROLLING LOUD \u00d7 MODELO",
-      "date": "2024.03.22",
+      "date": "2024.03.14",
       "location": "LOS ANGELES",
-      "description": "Modelo Rolling Loud LA activation.",
+      "description": "Rolling Loud Rolling Loud \u00d7 Modelo event in Los Angeles.",
       "images": [
-        71,
-        72,
-        73,
-        74,
-        75
+        79,
+        80,
+        81,
+        82,
+        83
+      ]
+    },
+    {
+      "title": "AIRMAX DN NIKEBYYOU",
+      "date": "2024.03.26",
+      "location": "NIKE SOHO",
+      "description": "Nike AirMax DN NikeByYou event in Nike SOHO.",
+      "images": [
+        300,
+        301,
+        302
+      ]
+    },
+    {
+      "title": "AIRMAX DN NIKEBYYOU",
+      "date": "2024.04.27",
+      "location": "NIKE SOHO",
+      "description": "Nike AirMax DN NikeByYou event in Nike SOHO.",
+      "images": [
+        305,
+        306,
+        307
+      ]
+    },
+    {
+      "title": "SPECIAL EVENT",
+      "date": "2024.05.21",
+      "location": "NIKE HOI",
+      "description": "Nike Special Event event in Nike HOI.",
+      "images": [
+        310,
+        311,
+        312
+      ]
+    },
+    {
+      "title": "AIR STUDIOS",
+      "date": "2024.07.08",
+      "location": "NIKE HOI",
+      "description": "Nike AIR STUDIOS event in Nike HOI.",
+      "images": [
+        315,
+        316,
+        317
+      ]
+    },
+    {
+      "title": "NIKEBYYOU",
+      "date": "2024.07.17",
+      "location": "NIKE SOHO",
+      "description": "Nike NikeByYou event in Nike SOHO.",
+      "images": [
+        320,
+        321,
+        322
+      ]
+    },
+    {
+      "title": "AUCTION EVENT",
+      "date": "2024.07.17",
+      "location": "NYC",
+      "description": "Christie\u2019s Auction Event event in NYC.",
+      "images": [
+        325,
+        326,
+        327
+      ]
+    },
+    {
+      "title": "AIRMAX DN NIKEBYYOU",
+      "date": "2024.07.27",
+      "location": "NIKE SOHO",
+      "description": "Nike AirMax DN NikeByYou event in Nike SOHO.",
+      "images": [
+        330,
+        331,
+        332
+      ]
+    },
+    {
+      "title": "AIRMAX DN NIKEBYYOU",
+      "date": "2024.08.10",
+      "location": "NIKE HOI",
+      "description": "Nike AirMax DN NikeByYou event in Nike HOI.",
+      "images": [
+        335,
+        336,
+        337
       ]
     },
     {
       "title": "VEGAS KICK OFF",
-      "date": "2024.09.14",
+      "date": "2024.09.01",
       "location": "LAS VEGAS",
-      "description": "Vegas Modelo Kick Off event.",
+      "description": "Modelo Vegas Kick Off event in Las Vegas.",
       "images": [
-        76,
-        77,
-        78,
-        79,
-        80
+        84,
+        85,
+        86,
+        87,
+        88
+      ]
+    },
+    {
+      "title": "COMPLEX \u00d7 F1 RACING \u00d7 LEVI\u2019S",
+      "date": "2024.10.16",
+      "location": "AUSTIN",
+      "description": "Complex Complex \u00d7 F1 Racing \u00d7 Levi\u2019s event in Austin.",
+      "images": [
+        340,
+        341,
+        342
+      ]
+    },
+    {
+      "title": "NIKEBYYOU",
+      "date": "2024.10.23",
+      "location": "NIKE SOHO",
+      "description": "Nike NikeByYou event in Nike SOHO.",
+      "images": [
+        345,
+        346,
+        347
+      ]
+    },
+    {
+      "title": "NIKEBYYOU",
+      "date": "2024.10.30",
+      "location": "NIKE SOHO",
+      "description": "Nike NikeByYou event in Nike SOHO.",
+      "images": [
+        350,
+        351,
+        352
+      ]
+    },
+    {
+      "title": "MARATHON NIKEBYYOU",
+      "date": "2024.11.01",
+      "location": "NIKE SOHO",
+      "description": "Nike Marathon NikeByYou event in Nike SOHO.",
+      "images": [
+        355,
+        356,
+        357
+      ]
+    },
+    {
+      "title": "METHON NIKEBYYOU",
+      "date": "2024.11.03",
+      "location": "NIKE SOHO",
+      "description": "Nike Methon NikeByYou event in Nike SOHO.",
+      "images": [
+        360,
+        361,
+        362
+      ]
+    },
+    {
+      "title": "MUSEUM OF ICE CREAM",
+      "date": "2024.12.08",
+      "location": "NYC",
+      "description": "Museum of Ice Cream Museum of Ice Cream event in NYC.",
+      "images": [
+        365,
+        366,
+        367
+      ]
+    },
+    {
+      "title": "ROLLING LOUD \u00d7 MODELO",
+      "date": "2024.12.12",
+      "location": "MIAMI",
+      "description": "Rolling Loud Rolling Loud \u00d7 Modelo event in Miami.",
+      "images": [
+        370,
+        371,
+        372
       ]
     }
   ],
   "2025": [
+    {
+      "title": "NATIONAL CHAMPIONSHIP",
+      "date": "2025.01.18",
+      "location": "ATLANTA",
+      "description": "Modelo National Championship event in Atlanta.",
+      "images": [
+        375,
+        376,
+        377
+      ]
+    },
     {
       "title": "TXRX WORKSHOP",
       "date": "2025.02.11",
       "location": "HOUSTON",
       "description": "Nike TXRX Workshop event in Houston.",
       "images": [
-        81,
-        82,
-        83,
-        84,
-        85
+        89,
+        90,
+        91,
+        92,
+        93
       ]
     },
     {
       "title": "ALL STAR WEEKEND \u00d7 BOARDROOM",
       "date": "2025.02.15",
       "location": "SAN FRANCISCO",
-      "description": "NBA All-Star Weekend Boardroom event in San Francisco.",
+      "description": "Nike All Star Weekend \u00d7 Boardroom event in San Francisco.",
       "images": [
-        86,
-        87,
-        88,
-        89,
-        90
+        94,
+        95,
+        96
       ]
     }
   ]
@@ -1111,6 +1739,268 @@
         holder.addEventListener("mouseout", () => {
             imgRefs.forEach(({ div }) => {
                 div.classList.remove("dimmed", "hovered");
+            });
+        });
+
+
+        // Enhanced project modal functionality
+        function populateProjectList() {
+            const projectsContainer = document.getElementById('projects-container');
+            if (!projectsContainer) return;
+            
+            projectsContainer.innerHTML = '';
+            
+            // Group projects by year
+            const projectsByYear = {};
+            Object.values(imageToProjectMap).forEach(project => {
+                const year = project.date ? project.date.split(' ').pop() : 'Unknown';
+                if (!projectsByYear[year]) {
+                    projectsByYear[year] = [];
+                }
+                projectsByYear[year].push(project);
+            });
+            
+            // Sort years in descending order
+            const sortedYears = Object.keys(projectsByYear).sort((a, b) => {
+                if (a === 'Unknown') return 1;
+                if (b === 'Unknown') return -1;
+                return parseInt(b) - parseInt(a);
+            });
+            
+            sortedYears.forEach(year => {
+                const yearSection = document.createElement('div');
+                yearSection.className = 'year-section';
+                
+                const yearTitle = document.createElement('div');
+                yearTitle.className = 'year-title';
+                yearTitle.textContent = year;
+                yearSection.appendChild(yearTitle);
+                
+                projectsByYear[year].forEach(project => {
+                    const projectItem = document.createElement('div');
+                    projectItem.className = 'project-item';
+                    projectItem.textContent = `${project.title} - ${project.location}`;
+                    
+                    // Add click handler to open modal
+                    projectItem.addEventListener('click', () => {
+                        openProjectModal(project);
+                    });
+                    
+                    yearSection.appendChild(projectItem);
+                });
+                
+                projectsContainer.appendChild(yearSection);
+            });
+        }
+        
+        function openProjectModal(project) {
+            const modal = document.getElementById('project-modal');
+            const modalTitle = document.getElementById('modal-title');
+            const modalDate = document.getElementById('modal-date');
+            const carousel = document.getElementById('modal-carousel');
+            
+            if (!modal || !carousel) return;
+            
+            // Set project info
+            modalTitle.textContent = project.title;
+            modalDate.textContent = `${project.date} - ${project.location}`;
+            
+            // Get project images
+            const projectImages = [];
+            if (project.images && project.images.length > 0) {
+                project.images.forEach(imageNum => {
+                    projectImages.push(`${BASE_PATH}high_res_1200/img${String(imageNum).padStart(3, '0')}-high.jpg`);
+                });
+            }
+            
+            createInfiniteCarousel(carousel, projectImages);
+            modal.style.display = 'block';
+            
+            // Prevent body scroll
+            document.body.style.overflow = 'hidden';
+        }
+        
+        function createInfiniteCarousel(container, images) {
+            if (!container || !images || images.length === 0) return;
+            
+            container.innerHTML = '';
+            container.style.position = 'relative';
+            
+            // Create infinite scroll by tripling the images
+            const infiniteImages = [...images, ...images, ...images];
+            
+            infiniteImages.forEach((imgSrc, index) => {
+                const item = document.createElement('div');
+                item.className = 'carousel-item';
+                
+                const img = document.createElement('img');
+                img.src = imgSrc;
+                img.alt = `Project image ${(index % images.length) + 1}`;
+                img.loading = 'lazy';
+                
+                item.appendChild(img);
+                container.appendChild(item);
+            });
+            
+            // Only add controls if more than one image
+            if (images.length > 1) {
+                // Add navigation buttons
+                const prevBtn = document.createElement('button');
+                prevBtn.className = 'carousel-nav carousel-prev';
+                prevBtn.innerHTML = '&#8249;';
+                
+                const nextBtn = document.createElement('button');
+                nextBtn.className = 'carousel-nav carousel-next';
+                nextBtn.innerHTML = '&#8250;';
+                
+                container.appendChild(prevBtn);
+                container.appendChild(nextBtn);
+                
+                // Add indicators
+                const indicators = document.createElement('div');
+                indicators.className = 'carousel-indicators';
+                images.forEach((_, index) => {
+                    const indicator = document.createElement('div');
+                    indicator.className = `carousel-indicator ${index === 0 ? 'active' : ''}`;
+                    indicators.appendChild(indicator);
+                });
+                container.appendChild(indicators);
+                
+                // Carousel state
+                let currentIndex = 0;
+                const itemWidth = container.querySelector('.carousel-item').offsetWidth + 20; // including margin
+                
+                // Start at the middle set for infinite scroll
+                container.scrollLeft = itemWidth * images.length;
+                
+                function updateCarousel(animate = true) {
+                    const targetScroll = (currentIndex + images.length) * itemWidth;
+                    
+                    if (animate) {
+                        container.scrollTo({
+                            left: targetScroll,
+                            behavior: 'smooth'
+                        });
+                    } else {
+                        container.scrollLeft = targetScroll;
+                    }
+                    
+                    // Update indicators
+                    indicators.querySelectorAll('.carousel-indicator').forEach((indicator, index) => {
+                        indicator.classList.toggle('active', index === currentIndex);
+                    });
+                }
+                
+                function nextSlide() {
+                    currentIndex = (currentIndex + 1) % images.length;
+                    updateCarousel();
+                    
+                    // Handle infinite scroll wrap
+                    setTimeout(() => {
+                        if (container.scrollLeft >= itemWidth * (images.length * 2)) {
+                            container.scrollLeft = itemWidth * images.length;
+                        }
+                    }, 500);
+                }
+                
+                function prevSlide() {
+                    currentIndex = (currentIndex - 1 + images.length) % images.length;
+                    updateCarousel();
+                    
+                    // Handle infinite scroll wrap
+                    setTimeout(() => {
+                        if (container.scrollLeft <= 0) {
+                            container.scrollLeft = itemWidth * images.length;
+                        }
+                    }, 500);
+                }
+                
+                // Event listeners
+                nextBtn.addEventListener('click', nextSlide);
+                prevBtn.addEventListener('click', prevSlide);
+                
+                // Indicator clicks
+                indicators.querySelectorAll('.carousel-indicator').forEach((indicator, index) => {
+                    indicator.addEventListener('click', () => {
+                        currentIndex = index;
+                        updateCarousel();
+                    });
+                });
+                
+                // Auto-play
+                let autoPlay = setInterval(nextSlide, 4000);
+                
+                container.addEventListener('mouseenter', () => clearInterval(autoPlay));
+                container.addEventListener('mouseleave', () => {
+                    autoPlay = setInterval(nextSlide, 4000);
+                });
+                
+                // Mouse wheel support
+                container.addEventListener('wheel', (e) => {
+                    e.preventDefault();
+                    if (e.deltaY > 0) {
+                        nextSlide();
+                    } else {
+                        prevSlide();
+                    }
+                });
+                
+                // Touch support
+                let startX = 0;
+                container.addEventListener('touchstart', (e) => {
+                    startX = e.touches[0].clientX;
+                    clearInterval(autoPlay);
+                });
+                
+                container.addEventListener('touchend', (e) => {
+                    const endX = e.changedTouches[0].clientX;
+                    const diff = startX - endX;
+                    
+                    if (Math.abs(diff) > 50) {
+                        if (diff > 0) {
+                            nextSlide();
+                        } else {
+                            prevSlide();
+                        }
+                    }
+                    
+                    autoPlay = setInterval(nextSlide, 4000);
+                });
+            }
+        }
+        
+        // Close modal function
+        function closeProjectModal() {
+            const modal = document.getElementById('project-modal');
+            if (modal) {
+                modal.style.display = 'none';
+                document.body.style.overflow = 'auto';
+            }
+        }
+
+
+        // Modal close functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const closeButton = document.querySelector('.close-button');
+            if (closeButton) {
+                closeButton.addEventListener('click', closeProjectModal);
+            }
+            
+            // Close on background click
+            const modal = document.getElementById('project-modal');
+            if (modal) {
+                modal.addEventListener('click', function(e) {
+                    if (e.target === modal) {
+                        closeProjectModal();
+                    }
+                });
+            }
+            
+            // Close on Escape key
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    closeProjectModal();
+                }
             });
         });
 
