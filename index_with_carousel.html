@@ -1862,13 +1862,22 @@
             const img = tile.querySelector("img");
             if (!img) return;
             
-            // Get the image number from the imgRefs array
-            const imageNumber = imgRefs.find(ref => ref.img === img)?.imageNumber;
-            if (!imageNumber) return;
+            // Extract image number directly from the src attribute
+            const src = img.src;
+            const match = src.match(/img(\d+)/);
+            if (!match) {
+                console.log('Could not extract image number from src:', src);
+                return;
+            }
+            
+            const imageNumber = parseInt(match[1]);
+            console.log('Extracted image number from src:', imageNumber, 'from src:', src);
             
             const project = imageToProjectMap[imageNumber];
             if (project) {
                 showProjectModal(project);
+            } else {
+                console.log('No project found for image', imageNumber);
             }
         });
           
