@@ -1753,6 +1753,9 @@
         const closeButton = document.querySelector(".close-button");
 
         function setupInfiniteScroll(carousel, originalLength) {
+            // Remove any existing scroll listeners to prevent duplicates
+            carousel.removeEventListener('scroll', carousel._infiniteScrollHandler);
+            
             let isScrolling = false;
             
             // Wait for images to load and calculate actual item width
@@ -1766,7 +1769,8 @@
                 // Set initial scroll position to the middle set
                 carousel.scrollLeft = totalWidth;
                 
-                carousel.addEventListener('scroll', () => {
+                // Create the scroll handler function
+                const scrollHandler = () => {
                     if (isScrolling) return;
                     
                     const scrollLeft = carousel.scrollLeft;
@@ -1786,7 +1790,11 @@
                         carousel.scrollLeft = totalWidth;
                         setTimeout(() => { isScrolling = false; }, 50);
                     }
-                });
+                };
+                
+                // Store the handler reference and add the listener
+                carousel._infiniteScrollHandler = scrollHandler;
+                carousel.addEventListener('scroll', scrollHandler);
             }, 100);
         }
 
@@ -1837,6 +1845,14 @@
 
         function closeModal() {
             hapticFeedback('light'); // Subtle feedback when closing modal
+            
+            // Clean up carousel scroll state
+            const carousel = document.getElementById("modal-carousel");
+            if (carousel && carousel._infiniteScrollHandler) {
+                carousel.removeEventListener('scroll', carousel._infiniteScrollHandler);
+                delete carousel._infiniteScrollHandler;
+            }
+            
             modal.style.display = "none";
         }
 
