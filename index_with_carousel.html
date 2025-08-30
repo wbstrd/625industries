@@ -1766,8 +1766,10 @@
                 const itemWidth = firstItem.offsetWidth + 30; // includes margin-right
                 const totalWidth = itemWidth * originalLength;
                 
-                // Set initial scroll position to the middle set
-                carousel.scrollLeft = totalWidth;
+
+                
+                // Set initial scroll position to the middle set (with 5 copies, middle is at 2.5x totalWidth)
+                carousel.scrollLeft = totalWidth * 2.5;
                 
                 // Create the scroll handler function
                 const scrollHandler = () => {
@@ -1778,16 +1780,16 @@
                     // Dynamic threshold based on number of images - more images = more buffer
                     const resetBuffer = Math.max(100, originalLength * 10); // Minimum 100px, or 10px per image
                     
-                    // If scrolled to the end of the third set, jump to the middle set
-                    if (scrollLeft >= totalWidth * 2 - resetBuffer) {
+                    // If scrolled to the end of the fourth set, jump to the middle set
+                    if (scrollLeft >= totalWidth * 4 - resetBuffer) {
                         isScrolling = true;
-                        carousel.scrollLeft = totalWidth;
+                        carousel.scrollLeft = totalWidth * 2.5;
                         setTimeout(() => { isScrolling = false; }, 50);
                     }
                     // If scrolled to the beginning of the first set, jump to the middle set
                     else if (scrollLeft <= resetBuffer) {
                         isScrolling = true;
-                        carousel.scrollLeft = totalWidth;
+                        carousel.scrollLeft = totalWidth * 2.5;
                         setTimeout(() => { isScrolling = false; }, 50);
                     }
                 };
@@ -1807,8 +1809,8 @@
             const carousel = document.getElementById("modal-carousel");
             carousel.innerHTML = '';
             
-            // Create infinite scroll by duplicating images 3 times
-            const allImages = [...project.images, ...project.images, ...project.images];
+            // Create infinite scroll by duplicating images 5 times (more copies = less frequent resets)
+            const allImages = [...project.images, ...project.images, ...project.images, ...project.images, ...project.images];
             
             allImages.forEach((imageNum, index) => {
                 const carouselItem = document.createElement("div");
