@@ -974,14 +974,18 @@
         </div>
         <div class="header-right">
             <div class="contact-trigger">Contact</div>
-            <div class="contact-form">
+            <form class="contact-form" action="https://formsubmit.co/admin@625industries.com" method="POST">
                 <h3>Get in Touch</h3>
-                <input type="text" placeholder="Name" required>
-                <input type="email" placeholder="Email" required>
-                <input type="text" placeholder="Subject">
-                <textarea placeholder="Message" required></textarea>
+                <input type="text" name="name" placeholder="Name" required>
+                <input type="email" name="email" placeholder="Email" required>
+                <input type="text" name="subject" placeholder="Subject">
+                <textarea name="message" placeholder="Message" required></textarea>
+                <input type="hidden" name="_subject" value="New Contact Form Submission from 625industries.com">
+                <input type="hidden" name="_template" value="table">
+                <input type="hidden" name="_captcha" value="false">
+                <input type="hidden" name="_next" value="https://625industries.github.io/625industries/">
                 <button type="submit">Send Message</button>
-            </div>
+            </form>
         </div>
         <div id="toggle-container">
             <div id="toggle-button">
@@ -1064,56 +1068,64 @@
       "title": "AIR MAX DAY",
       "date": "2018.03.26",
       "location": "BROOKLYN",
-      "description": "Creative Direction, Customization, Staffing, Workshop Execution",
+      "description": "Air Max Day celebration with customization workshop at 625 Studios in Brooklyn.",
+      "services": "Creative Direction, Customization, Staffing, Workshop Execution",
       "images": []
     },
     {
       "title": "KYRIE SNEAKER CUSTOMIZATION",
       "date": "2018.09.28",
       "location": "BROOKLYN",
-      "description": "Ideation, Creative Direction, Design, Buildout and Execution",
+      "description": "Kyrie sneaker customization workshop at 625 Studios in Brooklyn.",
+      "services": "Ideation, Creative Direction, Design, Buildout, Execution",
       "images": []
     },
     {
       "title": "MAKERS STUDIO",
       "date": "2018.10.18",
       "location": "LOS ANGELES",
-      "description": "Creative Direction, Workshop Development, Customization, Space Design, Staffing",
+      "description": "Nike Makers Studio customization workshop in Los Angeles.",
+      "services": "Creative Direction, Workshop Development, Customization, Space Design, Staffing",
       "images": []
     },
     {
       "title": "SOCIAL STUDIES",
       "date": "2018.11.16",
       "location": "NEW YORK",
-      "description": "Creative Direction, Customization, Workshop Execution, Community Engagement",
+      "description": "Nike Social Studies community-focused customization workshop in New York.",
+      "services": "Creative Direction, Customization, Workshop Execution, Community Engagement",
       "images": []
     },
     {
       "title": "MAKERS STUDIO",
       "date": "2018.12.01",
       "location": "ROOSEVELT FIELD MALL",
-      "description": "Creative Direction, Workshop Development, Customization, Space Design, Staffing",
+      "description": "Nike Makers Studio customization workshop at Roosevelt Field Mall.",
+      "services": "Creative Direction, Workshop Development, Customization, Space Design, Staffing",
       "images": [8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18]
     },
     {
       "title": "GIFTING SUITE",
       "date": "2018.12.06",
       "location": "MIAMI",
-      "description": "Creative Direction, Customization, Seeding Experience, Space Design",
+      "description": "Nike gifting suite customization experience during Art Basel in Miami.",
+      "services": "Creative Direction, Customization, Seeding Experience, Space Design",
       "images": []
     },
     {
       "title": "MAKERS STUDIO",
       "date": "2018.12.12",
       "location": "LOS ANGELES",
-      "description": "Creative Direction, Workshop Development, Customization, Space Design, Staffing",
+      "description": "Nike Makers Studio customization workshop in Los Angeles.",
+      "services": "Creative Direction, Workshop Development, Customization, Space Design, Staffing",
       "images": []
     },
     {
       "title": "MAKERS STUDIO",
       "date": "2018.12.16",
       "location": "LOS ANGELES",
-      "description": "Creative Direction, Workshop Development, Customization, Space Design, Staffing",
+      "description": "Nike Makers Studio customization workshop in Los Angeles.",
+      "services": "Creative Direction, Workshop Development, Customization, Space Design, Staffing",
       "images": []
     }
   ],
@@ -1122,35 +1134,40 @@
       "title": "ALL-STAR WEEKEND",
       "date": "2019.02.15",
       "location": "CHARLOTTE",
-      "description": "Creative Direction, Customization, Staffing, Workshop Execution, Seeding Experience",
+      "description": "Nike NBA All-Star Weekend customization experience in Charlotte.",
+      "services": "Creative Direction, Customization, Staffing, Workshop Execution, Seeding Experience",
       "images": []
     },
     {
       "title": "AIR MAX WEEK",
       "date": "2019.03.22",
       "location": "NEW YORK",
-      "description": "Creative Direction, Customization, Workshop Development, Space Design, Staffing",
+      "description": "Nike Air Max Week customization workshops in New York.",
+      "services": "Creative Direction, Customization, Workshop Development, Space Design, Staffing",
       "images": []
     },
     {
       "title": "CUSTOM POLO (SNKRS)",
       "date": "2019.07.31",
       "location": "NYC",
-      "description": "Creative Direction, Customization, Production, Graphic Design",
+      "description": "Custom polo customization experience for SNKRS app in NYC.",
+      "services": "Creative Direction, Customization, Production, Graphic Design",
       "images": []
     },
     {
       "title": "LEVI'S × CENTURY 21",
       "date": "2019.10.03",
       "location": "NYC",
-      "description": "Creative Direction, Customization, Brand Strategy, Space Design",
+      "description": "Levi's x Century 21 collaborative customization experience in NYC.",
+      "services": "Creative Direction, Customization, Brand Strategy, Space Design",
       "images": []
     },
     {
       "title": "LEVI'S HAUS",
       "date": "2019.12.04",
       "location": "MIAMI",
-      "description": "Creative Direction, Brand Strategy, Space Design, Customization Experience",
+      "description": "Levi's Haus customization experience during Art Basel Miami.",
+      "services": "Creative Direction, Brand Strategy, Space Design, Customization Experience",
       "images": []
     }
   ],
@@ -1159,21 +1176,24 @@
       "title": "VERDY × LEVI'S HAUS",
       "date": "2020.01.24",
       "location": "MIAMI",
-      "description": "Creative Direction, Brand Strategy, Artist Collaboration, Customization Experience",
+      "description": "Verdy x Levi's Haus artist collaboration customization experience in Miami.",
+      "services": "Creative Direction, Brand Strategy, Artist Collaboration, Customization Experience",
       "images": []
     },
     {
       "title": "SUPER BOWL LIV",
       "date": "2020.01.26",
       "location": "MIAMI",
-      "description": "Creative Direction, Customization, Staffing, Workshop Execution, Seeding Experience",
+      "description": "Nike customization experience during Super Bowl LIV weekend in Miami.",
+      "services": "Creative Direction, Customization, Staffing, Workshop Execution, Seeding Experience",
       "images": []
     },
     {
       "title": "LEVI'S × BAPE",
       "date": "2020.03.05",
       "location": "MIAMI",
-      "description": "Creative Direction, Customization, Brand Strategy, Exclusive Seeding Experience",
+      "description": "Levi's x BAPE exclusive collaborative customization experience in Miami.",
+      "services": "Creative Direction, Customization, Brand Strategy, Exclusive Seeding Experience",
       "images": []
     }
   ],
@@ -1182,7 +1202,8 @@
       "title": "NIKEBYYOU",
       "date": "2021.07.22",
       "location": "CHICAGO",
-      "description": "Creative Direction, Customization, Workshop Execution, Staffing",
+      "description": "Nike By You customization workshop in Chicago.",
+      "services": "Creative Direction, Customization, Workshop Execution, Staffing",
       "images": []
     },
     {
@@ -1196,35 +1217,40 @@
       "title": "CONGA / SALESFORCE AF1 CUSTOM",
       "date": "2021.10.26",
       "location": "NYC",
-      "description": "Creative Direction, Customization, Corporate Experience, Seeding",
+      "description": "Corporate Air Force 1 customization experience for Conga/Salesforce in NYC.",
+      "services": "Creative Direction, Customization, Corporate Experience, Seeding",
       "images": []
     },
     {
       "title": "ASTROWORLD × LEVI'S",
       "date": "2021.11.05",
       "location": "HOUSTON",
-      "description": "Creative Direction, Brand Strategy, Event Activation, Customization Experience",
+      "description": "Astroworld x Levi's collaborative event activation and customization experience in Houston.",
+      "services": "Creative Direction, Brand Strategy, Event Activation, Customization Experience",
       "images": []
     },
     {
       "title": "ROOKIE OF THE YEAR CUSTOM",
       "date": "2021.11.16",
       "location": "NYC",
-      "description": "Creative Direction, Customization, Seeding Experience, Talent Relations",
+      "description": "NBA Rookie of the Year custom sneaker experience in NYC.",
+      "services": "Creative Direction, Customization, Seeding Experience, Talent Relations",
       "images": []
     },
     {
       "title": "ART BASEL × CHASE PRIVATE CLIENT",
       "date": "2021.12.02",
       "location": "MIAMI",
-      "description": "Creative Direction, VIP Experience, Customization, Private Client Services",
+      "description": "Exclusive Art Basel customization experience for Chase Private Client services in Miami.",
+      "services": "Creative Direction, VIP Experience, Customization, Private Client Services",
       "images": []
     },
     {
       "title": "ART BASEL × META",
       "date": "2021.12.02",
       "location": "MIAMI",
-      "description": "Creative Direction, Tech Integration, Brand Strategy, Immersive Experience",
+      "description": "Art Basel x Meta immersive tech-integrated customization experience in Miami.",
+      "services": "Creative Direction, Tech Integration, Brand Strategy, Immersive Experience",
       "images": []
     }
   ],
@@ -1233,63 +1259,72 @@
       "title": "NIKEBYYOU – SUPER BOWL LVI",
       "date": "2022.02.03",
       "location": "LOS ANGELES",
-      "description": "Creative Direction, Customization, Staffing, Workshop Execution, Space Design",
+      "description": "Nike By You customization experience during Super Bowl LVI in Los Angeles.",
+      "services": "Creative Direction, Customization, Staffing, Workshop Execution, Space Design",
       "images": []
     },
     {
       "title": "SHE RUNS BOSTON (BRA CUSTOMIZATION)",
       "date": "2022.03.23",
       "location": "NYC",
-      "description": "Creative Direction, Customization, Workshop Development, Community Engagement",
+      "description": "Nike bra customization workshop for She Runs Boston community event in NYC.",
+      "services": "Creative Direction, Customization, Workshop Development, Community Engagement",
       "images": []
     },
     {
       "title": "SNKRS PHOTOSHOOT",
       "date": "2022.03.31",
       "location": "NYC",
-      "description": "Creative Direction, Production, Styling, Graphic Design",
+      "description": "SNKRS app photoshoot production in NYC.",
+      "services": "Creative Direction, Production, Styling, Graphic Design",
       "images": []
     },
     {
       "title": "LEVI'S HOUSE × DAISY WORLD",
       "date": "2022.04.05",
       "location": "LOS ANGELES",
-      "description": "Creative Direction, Brand Strategy, Customization, Space Design, Artist Collaboration",
+      "description": "Levi's House x Daisy World artist collaboration customization experience in Los Angeles.",
+      "services": "Creative Direction, Brand Strategy, Customization, Space Design, Artist Collaboration",
       "images": [78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90]
     },
     {
       "title": "LEVI'S × COME",
       "date": "2022.04.07",
       "location": "WATTS",
-      "description": "Creative Direction, Community Engagement, Customization, Brand Strategy",
+      "description": "Levi's x Come community engagement customization experience in Watts.",
+      "services": "Creative Direction, Community Engagement, Customization, Brand Strategy",
       "images": [99, 100, 101, 102, 103, 104]
     },
     {
       "title": "LEVI'S × DAISY WORLD",
       "date": "2022.04.09",
       "location": "SANTA MONICA",
-      "description": "Creative Direction, Brand Strategy, Customization, Community Engagement",
+      "description": "Levi's x Daisy World community customization experience in Santa Monica.",
+      "services": "Creative Direction, Brand Strategy, Customization, Community Engagement",
       "images": []
     },
     {
       "title": "BILLIE EILISH × NIKE (UPCYCLE)",
       "date": "2022.04.19",
       "location": "LOS ANGELES",
-      "description": "Creative Direction, Sustainability Focus, Artist Collaboration, Upcycling Workshop",
+      "description": "Billie Eilish x Nike sustainable upcycling workshop collaboration in Los Angeles.",
+      "services": "Creative Direction, Sustainability Focus, Artist Collaboration, Upcycling Workshop",
       "images": [91, 92, 93, 94, 95, 96, 97, 98]
     },
     {
       "title": "NFL DRAFT DAY",
       "date": "2022.04.27",
       "location": "LAS VEGAS",
-      "description": "Creative Direction, Staffing, Seeding, Design",
+      "description": "NFL Draft Day customization experience in Las Vegas.",
+      "services": "Creative Direction, Staffing, Seeding, Design",
       "images": [113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 131, 132]
     },
     {
       "title": "IN-STORE CUSTOMIZATION",
       "date": "2022.05.19",
       "location": "NYC",
-      "description": "Creative Direction, Customization, Workshop Development, Retail Integration",
+      "description": "Nike in-store customization workshop with retail integration in NYC.",
+      "services": "Creative Direction, Customization, Workshop Development, Retail Integration",
       "images": []
     },
     {
@@ -1303,7 +1338,8 @@
       "title": "MLB NIKEBYYOU",
       "date": "2022.07.15",
       "location": "LOS ANGELES",
-      "description": "Artwork, Creative, Staffing, Sourcing, Production",
+      "description": "MLB Nike By You customization experience in Los Angeles.",
+      "services": "Artwork, Creative Direction, Staffing, Sourcing, Production",
       "images": [47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63]
     },
     {
@@ -1338,7 +1374,8 @@
       "title": "NIKE UPCYCLE",
       "date": "2022.04.22",
       "location": "LOS ANGELES",
-      "description": "Ideation, Creative Direction, Workshop, Production, Space Design, Staffing, Strategy",
+      "description": "Nike upcycling workshop focusing on sustainable customization practices in Los Angeles.",
+      "services": "Ideation, Creative Direction, Workshop Development, Production, Space Design, Staffing, Strategy",
       "images": []
     },
     {
@@ -1373,7 +1410,8 @@
       "title": "NIKEBYYOU – CHICAGO SCHOOL",
       "date": "2022.11.04",
       "location": "CHICAGO",
-      "description": "Creative Direction, Customization, Workshop Execution, Community Engagement",
+      "description": "Nike By You school customization workshop with community engagement in Chicago.",
+      "services": "Creative Direction, Customization, Workshop Execution, Community Engagement",
       "images": []
     }
   ],
@@ -1446,7 +1484,8 @@
       "title": "REMIX YOUR GAME",
       "date": "2023.07.20",
       "location": "BRONX",
-      "description": "Creative Direction, Community Engagement, Customization, Youth Activation",
+      "description": "Nike Remix Your Game youth community activation in the Bronx.",
+      "services": "Creative Direction, Community Engagement, Customization, Youth Activation",
       "images": []
     },
     {
@@ -1468,14 +1507,16 @@
       "title": "HIP HOP 50TH",
       "date": "2023.08.11",
       "location": "NYC",
-      "description": "Creative Direction, Staffing, Customization, Artwork, Space Design",
+      "description": "Nike Hip Hop 50th anniversary celebration customization experience in NYC.",
+      "services": "Creative Direction, Staffing, Customization, Artwork, Space Design",
       "images": []
     },
     {
       "title": "YARDRUNNERS NIKEBYYOU",
       "date": "2023.10.27",
       "location": "NIKE SOHO",
-      "description": "Creative Direction, Customization, Workshop Execution, Community Activation",
+      "description": "Yardrunners Nike By You community customization workshop at Nike Soho.",
+      "services": "Creative Direction, Customization, Workshop Execution, Community Activation",
       "images": []
     },
     {
@@ -1632,7 +1673,8 @@
       "title": "METHON NIKEBYYOU",
       "date": "2024.11.03",
       "location": "NIKE SOHO",
-      "description": "In-store customization workshops leading up to and during NYC Marathon - Creative Direction, Talent, Space Design, Staffing, Customization",
+      "description": "In-store customization workshops leading up to and during NYC Marathon.",
+      "services": "Creative Direction, Talent, Space Design, Staffing, Customization",
       "images": []
     },
     {
@@ -1695,7 +1737,8 @@
       "title": "NIKE NBA IN PARIS",
       "date": "2025.01.29",
       "location": "PARIS",
-      "description": "Nike NBA in Paris - Creative Direction",
+      "description": "Nike NBA event in Paris.",
+      "services": "Creative Direction",
       "images": []
     },
     {
@@ -2523,13 +2566,12 @@
         });
 
         contactButton.addEventListener('click', (e) => {
-            e.preventDefault(); // Prevent actual form submission for demo
             hapticFeedback('success'); // Success pattern for submit
             
-            // Show a simple feedback (you can replace with actual form submission)
+            // Show feedback while form is being submitted
             const originalText = contactButton.textContent;
-            contactButton.textContent = 'Sent!';
-            contactButton.style.background = '#4CAF50';
+            contactButton.textContent = 'Sending...';
+            contactButton.disabled = true;
             
             setTimeout(() => {
                 contactButton.textContent = originalText;
