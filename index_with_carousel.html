@@ -1911,6 +1911,7 @@
                     const src = isMobile ? pools.micro[index] : pools.low[index];
                     img.src = src;
                     img.dataset.src = src;
+                    // No error handling for now - let's see what happens with the current setup
                     // Add all mobile tiny resolutions
                     img.dataset.micro = pools.micro[index];
                     img.dataset.tiny = pools.tiny[index];
@@ -2242,7 +2243,7 @@
                 if (scale >= 1.5) newRes = "micro2";  // Switch to micro2 (highest) early
             } else {
                 // Desktop: Aggressive resolution switching with reasonable high-res threshold
-                if (scale >= 0.6) newRes = "small";   // Switch to small early
+                if (scale >= 1.0) newRes = "small";   // Switch to small at 1x
                 if (scale >= 1.0) newRes = "medium";  // Switch to medium early
                 if (scale >= 2.5) newRes = "high1200"; // Switch to high1200 at good threshold
                 if (scale >= 6.0) newRes = "high";    // Switch to high only when zoomed in a lot
