@@ -188,6 +188,9 @@
             left: 50%;
             translate: -50% -50%;
             transform-style: preserve-3d;
+            image-rendering: -webkit-optimize-contrast;
+            image-rendering: crisp-edges;
+            will-change: transform;
         }
 
         #clock625.hidden {
@@ -219,6 +222,9 @@
             transition: transform 0.2s ease-out;
             transform: translateZ(4px);
             box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+            image-rendering: -webkit-optimize-contrast;
+            image-rendering: crisp-edges;
+            image-rendering: pixelated;
         }
         
         .hovered img {
@@ -2231,9 +2237,6 @@
         let currentRes = isMobile ? "micro" : "low";
 
         function updateZoom() {
-            // Use transform3d for hardware acceleration
-            holder.style.transform = `scale3d(${scale}, ${scale}, 1)`;
-
             let newRes = isMobile ? "micro" : "low";
             
             if (isMobile) {
@@ -2243,22 +2246,48 @@
                 if (scale >= 2.0) newRes = "nano";    // 100x100px
                 if (scale >= 4.0) newRes = "micro2";  // 120x120px - max mobile
             } else {
-                // Desktop resolution progression
-                if (scale >= 1.3) newRes = "small";
-                if (scale >= 2.3) newRes = "medium";
-                if (scale >= 5.5) newRes = "high1200";
-                if (scale >= 11) newRes = "high";
+                // Desktop resolution progression - improved thresholds for better quality
+                if (scale >= 1.0) newRes = "small";   // Earlier switch to small
+                if (scale >= 1.8) newRes = "medium";  // Earlier switch to medium
+                if (scale >= 3.5) newRes = "high1200"; // Earlier switch to high1200
+                if (scale >= 7.0) newRes = "high";    // Earlier switch to high
             }
 
-            // Only update image resolutions when actually changing
+            // Update image resolutions first, then apply scaling
             if (newRes !== currentRes) {
                 currentRes = newRes;
-                // Batch DOM updates
-                requestAnimationFrame(() => {
-                    imgRefs.forEach(({ img }) => {
-                        img.src = img.dataset[currentRes];
+                
+                // Preload higher resolution images before applying scale
+                const imagePromises = imgRefs.map(({ img }) => {
+                    return new Promise((resolve) => {
+                        const newSrc = img.dataset[currentRes];
+                        if (img.src !== newSrc) {
+                            const tempImg = new Image();
+                            tempImg.onload = () => {
+                                img.src = newSrc;
+                                resolve();
+                            };
+                            tempImg.onerror = () => {
+                                img.src = newSrc; // Fallback even if preload fails
+                                resolve();
+                            };
+                            tempImg.src = newSrc;
+                        } else {
+                            resolve();
+                        }
                     });
                 });
+                
+                // Apply scaling only after images are loaded
+                Promise.all(imagePromises).then(() => {
+                    // Use transform3d for hardware acceleration with better quality
+                    holder.style.transform = `scale3d(${scale}, ${scale}, 1)`;
+                    holder.style.imageRendering = scale >= 2 ? 'crisp-edges' : 'auto';
+                });
+            } else {
+                // No resolution change, just apply scaling
+                holder.style.transform = `scale3d(${scale}, ${scale}, 1)`;
+                holder.style.imageRendering = scale >= 2 ? 'crisp-edges' : 'auto';
             }
 
             // Optimize explosion effect - only calculate when needed
@@ -2774,8 +2803,6 @@
 </body>
 </html>
 
-Don
-what a
 
-umn
+
 
