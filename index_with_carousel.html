@@ -45,6 +45,8 @@
             align-items: center;
             gap: 10px;
             pointer-events: auto; /* Ensure toggle is clickable */
+            background: transparent;
+            padding: 10px; /* Add padding to ensure toggle is fully visible */
         }
 
         #toggle-button {
@@ -90,7 +92,7 @@
             opacity: 0;
             visibility: hidden;
             transition: all 0.3s ease;
-            display: flex;
+            display: none; /* Completely hide when not active */
             align-items: center;
             justify-content: center;
         }
@@ -160,6 +162,40 @@
         .project-item:hover {
             color: #ffffff;
             background: rgba(255, 255, 255, 0.1);
+        }
+
+        /* Sort Controls */
+        .sort-controls {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .sort-btn {
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: #ccc;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-family: 'Bitcount Mono Light', monospace;
+            font-size: 0.7rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .sort-btn:hover {
+            border-color: rgba(255, 255, 255, 0.6);
+            color: #fff;
+        }
+
+        .sort-btn.active {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.8);
+            color: #fff;
         }
 
         @keyframes slotMachineIn {
@@ -382,7 +418,7 @@
             align-items: flex-start;
             pointer-events: auto; /* Enable pointer events for header */
             height: 80px; /* Fixed header height */
-            background: rgba(0, 0, 0, 0.8); /* Solid background with opacity */
+            background: transparent;
         }
 
         .header-left {
@@ -578,6 +614,7 @@
                 justify-content: space-between;
                 min-height: 50px;
                 z-index: 1001;
+                background: transparent;
             }
 
             .header-left {
@@ -641,6 +678,16 @@
                 font-size: 0.8rem;
                 margin-bottom: 6px;
                 padding: 6px;
+            }
+
+            .sort-controls {
+                gap: 10px;
+                margin-bottom: 20px;
+            }
+
+            .sort-btn {
+                font-size: 0.6rem;
+                padding: 6px 12px;
             }
 
             /* Modal adjustments */
@@ -855,6 +902,7 @@
             .site-header {
                 padding: 6px 10px;
                 min-height: 45px;
+                background: transparent;
             }
 
             .header-left h1 {
@@ -935,6 +983,7 @@
             .site-header {
                 padding: 5px 10px;
                 min-height: 40px;
+                background: transparent;
             }
 
             .header-left h1 {
@@ -1003,6 +1052,11 @@
         <div id="project-list">
             <div id="project-list-content">
                 <h2>INDEX</h2>
+                <div class="sort-controls">
+                    <button class="sort-btn active" data-sort="year">Year</button>
+                    <button class="sort-btn" data-sort="brand">Client</button>
+                    <button class="sort-btn" data-sort="location">Location</button>
+                </div>
                 <div id="projects-container"></div>
             </div>
         </div>
@@ -2126,36 +2180,217 @@
             }
         }, { passive: false });
 
-        // Populate project list with staggered animations and click handlers
-        function populateProjectList() {
-            const container = document.getElementById("projects-container");
+        // Extract brand name from project title and description
+        function extractBrand(project) {
+            const title = project.title;
+            const description = project.description || '';
+            const combinedText = `${title} ${description}`.toUpperCase();
             
-            Object.keys(projects).forEach(year => {
-                const yearSection = document.createElement("div");
-                yearSection.className = "year-section";
-                
-                const yearTitle = document.createElement("div");
-                yearTitle.className = "year-title";
-                yearTitle.textContent = year;
-                yearSection.appendChild(yearTitle);
-                
-                projects[year].forEach((project, index) => {
-                    const projectItem = document.createElement("div");
-                    projectItem.className = "project-item";
-                    projectItem.textContent = `${project.date} – ${project.title} – ${project.location}`;
-                    projectItem.style.animationDelay = `${index * 0.1}s`;
+            const brandPatterns = [
+                { pattern: /NIKE/gi, brand: 'NIKE' },
+                { pattern: /JORDAN/gi, brand: 'NIKE' }, // Jordan is Nike
+                { pattern: /KYRIE/gi, brand: 'NIKE' }, // Kyrie is Nike
+                { pattern: /LEVI'?S/gi, brand: 'LEVI\'S' },
+                { pattern: /ROLLING\s+LOUD/gi, brand: 'ROLLING LOUD' },
+                { pattern: /BILLIE\s+EILISH/gi, brand: 'BILLIE EILISH' },
+                { pattern: /BAPE/gi, brand: 'BAPE' },
+                { pattern: /VERDY/gi, brand: 'VERDY' },
+                { pattern: /CHASE/gi, brand: 'CHASE' },
+                { pattern: /META/gi, brand: 'META' },
+                { pattern: /SALESFORCE/gi, brand: 'SALESFORCE' },
+                { pattern: /ART\s+BASEL/gi, brand: 'ART BASEL' },
+                { pattern: /ASTROWORLD/gi, brand: 'ASTROWORLD' },
+                { pattern: /DAISY\s+WORLD/gi, brand: 'DAISY WORLD' },
+                { pattern: /COME/gi, brand: 'COME' },
+                { pattern: /CENTURY\s+21/gi, brand: 'CENTURY 21' },
+                { pattern: /CHRISTIE'?S/gi, brand: 'CHRISTIE\'S' },
+                { pattern: /NBA/gi, brand: 'NBA' },
+                { pattern: /MUSEUM\s+OF\s+ICE\s+CREAM/gi, brand: 'MUSEUM OF ICE CREAM' },
+                { pattern: /SNKRS/gi, brand: 'NIKE' } // SNKRS is Nike
+            ];
+            
+            for (const { pattern, brand } of brandPatterns) {
+                if (pattern.test(combinedText)) {
+                    return brand;
+                }
+            }
+            
+            // Special cases based on title patterns
+            if (title.includes('BACK2SCHOOL') || title.includes('GIFTING SUITE') || title.includes('BEYOND THE COURT')) {
+                return 'NIKE';
+            }
+            if (title.includes('ALL-STAR WEEKEND')) {
+                return 'NBA';
+            }
+            if (title.includes('AUCTION EVENT')) {
+                return 'CHRISTIE\'S';
+            }
+            if (title.includes('CUSTOM POLO') && title.includes('SNKRS')) {
+                return 'NIKE';
+            }
+            
+            // If no brand found, return first word or "OTHER"
+            const firstWord = title.split(' ')[0];
+            return firstWord.length > 3 ? firstWord : 'OTHER';
+        }
+
+        // Populate project list with staggered animations and click handlers
+        function populateProjectList(sortBy = 'year') {
+            const container = document.getElementById("projects-container");
+            container.innerHTML = ''; // Clear existing content
+            
+            if (sortBy === 'year') {
+                // Original year-based sorting
+                Object.keys(projects).forEach(year => {
+                    const yearSection = document.createElement("div");
+                    yearSection.className = "year-section";
+                    container.appendChild(yearSection);
                     
-                    // Add click handler for project list items
-                                    projectItem.addEventListener("click", () => {
-                    hapticFeedback('medium'); // Haptic feedback for project selection
-                    showProjectModal(project);
-                });
+                    const yearTitle = document.createElement("div");
+                    yearTitle.className = "year-title";
+                    yearTitle.textContent = year;
+                    yearSection.appendChild(yearTitle);
                     
-                    yearSection.appendChild(projectItem);
+                    projects[year].forEach((project, index) => {
+                        createProjectItem(project, index, yearSection);
+                    });
+                });
+            } else if (sortBy === 'brand') {
+                // Brand-based sorting
+                const brandGroups = {};
+                
+                // Group projects by brand
+                Object.keys(projects).forEach(year => {
+                    projects[year].forEach(project => {
+                        const brand = extractBrand(project);
+                        if (!brandGroups[brand]) {
+                            brandGroups[brand] = [];
+                        }
+                        brandGroups[brand].push(project);
+                    });
                 });
                 
-                container.appendChild(yearSection);
+                // Sort brands alphabetically
+                const sortedBrands = Object.keys(brandGroups).sort();
+                
+                sortedBrands.forEach(brand => {
+                    const brandSection = document.createElement("div");
+                    brandSection.className = "year-section";
+                    container.appendChild(brandSection);
+                    
+                    const brandTitle = document.createElement("div");
+                    brandTitle.className = "year-title";
+                    brandTitle.textContent = brand;
+                    brandSection.appendChild(brandTitle);
+                    
+                    brandGroups[brand].forEach((project, index) => {
+                        createProjectItem(project, index, brandSection);
+                    });
+                });
+            } else if (sortBy === 'location') {
+                // Location-based sorting
+                const locationGroups = {};
+                
+                // Function to normalize location names
+                function normalizeLocation(location) {
+                    const locationUpper = location.toUpperCase();
+                    if (locationUpper.includes('BROOKLYN') || 
+                        locationUpper.includes('BRONX') || 
+                        locationUpper.includes('SOHO') || 
+                        locationUpper.includes('MANHATTAN') ||
+                        locationUpper.includes('QUEENS') ||
+                        locationUpper.includes('STATEN ISLAND') ||
+                        locationUpper.includes('ROOSEVELT FIELD') ||
+                        locationUpper.includes('NIKE HOUSE OF INNOVATION') ||
+                        locationUpper.includes('NIKE HOI') ||
+                        locationUpper.includes('NYC') ||
+                        locationUpper.includes('NEW YORK')) {
+                        return 'NYC';
+                    }
+                    return location;
+                }
+                
+                // Group projects by normalized location
+                Object.keys(projects).forEach(year => {
+                    projects[year].forEach(project => {
+                        const normalizedLocation = normalizeLocation(project.location);
+                        if (!locationGroups[normalizedLocation]) {
+                            locationGroups[normalizedLocation] = [];
+                        }
+                        locationGroups[normalizedLocation].push(project);
+                    });
+                });
+                
+                // Sort locations alphabetically
+                const sortedLocations = Object.keys(locationGroups).sort();
+                
+                sortedLocations.forEach(location => {
+                    const locationSection = document.createElement("div");
+                    locationSection.className = "year-section";
+                    container.appendChild(locationSection);
+                    
+                    const locationTitle = document.createElement("div");
+                    locationTitle.className = "year-title";
+                    locationTitle.textContent = location;
+                    locationSection.appendChild(locationTitle);
+                    
+                    locationGroups[location].forEach((project, index) => {
+                        createProjectItem(project, index, locationSection);
+                    });
+                });
+            }
+        }
+
+        // Helper function to create project items
+        function createProjectItem(project, index, parentSection) {
+            const projectItem = document.createElement("div");
+            projectItem.className = "project-item";
+            
+            // Extract month from date and convert to 3-letter format
+            const monthNames = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 
+                              'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
+            let monthAbbr = '';
+            
+            // Try to parse the date to extract month
+            try {
+                // Handle YYYY.MM.DD format (like "2018.03.26")
+                const dateMatch = project.date.match(/(\d{4})\.(\d{1,2})\.(\d{1,2})/);
+                if (dateMatch) {
+                    const monthIndex = parseInt(dateMatch[2]) - 1; // Convert to 0-based index
+                    monthAbbr = monthNames[monthIndex] || '';
+                } else {
+                    // Fallback: try MM/DD/YYYY format
+                    const dateMatch2 = project.date.match(/(\d{1,2})\/(\d{1,2})\/(\d{4})/);
+                    if (dateMatch2) {
+                        const monthIndex = parseInt(dateMatch2[1]) - 1;
+                        monthAbbr = monthNames[monthIndex] || '';
+                    } else {
+                        // Fallback: try full month names
+                        const monthMatch = project.date.match(/(January|February|March|April|May|June|July|August|September|October|November|December)/i);
+                        if (monthMatch) {
+                            const fullMonth = monthMatch[1].toLowerCase();
+                            const monthIndex = ['january', 'february', 'march', 'april', 'may', 'june', 
+                                               'july', 'august', 'september', 'october', 'november', 'december'].indexOf(fullMonth);
+                            if (monthIndex !== -1) {
+                                monthAbbr = monthNames[monthIndex];
+                            }
+                        }
+                    }
+                }
+            } catch (e) {
+                console.log('Date parsing error:', e);
+            }
+            
+            projectItem.textContent = `${monthAbbr} – ${project.title} – ${project.location}`;
+            projectItem.style.animationDelay = `${index * 0.1}s`;
+            
+            // Add click handler for project list items
+            projectItem.addEventListener("click", () => {
+                hapticFeedback('medium'); // Haptic feedback for project selection
+                showProjectModal(project);
             });
+            
+            parentSection.appendChild(projectItem);
         }
 
         // Toggle functionality
@@ -2175,6 +2410,7 @@
             if (isToggleActive) {
                 toggleButton.classList.add("active");
                 projectList.classList.add("active");
+                projectList.style.display = "flex"; // Show the project list
                 clock625.classList.add("hidden");
                 // Hide zoom slider when project list is active
                 if (zoomSlider && isMobile) {
@@ -2183,6 +2419,7 @@
             } else {
                 toggleButton.classList.remove("active");
                 projectList.classList.remove("active");
+                projectList.style.display = "none"; // Hide the project list
                 clock625.classList.remove("hidden");
                 // Show zoom slider when back to clock view
                 if (zoomSlider && isMobile) {
@@ -2762,6 +2999,22 @@
             // Initial update
             updateCarouselProgress();
         }
+
+        // Sort button event listeners
+        document.addEventListener('DOMContentLoaded', () => {
+            const sortButtons = document.querySelectorAll('.sort-btn');
+            sortButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    // Remove active class from all buttons
+                    sortButtons.forEach(btn => btn.classList.remove('active'));
+                    // Add active class to clicked button
+                    button.classList.add('active');
+                    // Get sort type and repopulate list
+                    const sortType = button.getAttribute('data-sort');
+                    populateProjectList(sortType);
+                });
+            });
+        });
 
         // Initialize
         populateProjectList();
